@@ -92,7 +92,8 @@ function createExpandable(preview: string, buildExpanded: () => HTMLElement): HT
   let expanded = false;
   let expandedEl: HTMLElement | null = null;
 
-  container.addEventListener('click', () => {
+  container.addEventListener('click', (event) => {
+    event.stopPropagation();
     expanded = !expanded;
     toggle.textContent = expanded ? '▾' : '▸';
     previewEl.hidden = expanded;

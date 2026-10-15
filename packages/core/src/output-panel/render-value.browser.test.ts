@@ -56,6 +56,45 @@ test('renders a composite collapsed by default, expanding and collapsing on clic
   document.body.removeChild(el);
 });
 
+test('expanding a nested composite does not collapse its ancestor', () => {
+  const value: SerializedValue = {
+    kind: 'object',
+    preview: '{ a: { b: 1 } }',
+    className: null,
+    entries: [
+      {
+        key: 'a',
+        value: {
+          kind: 'object',
+          preview: '{ b: 1 }',
+          className: null,
+          entries: [{ key: 'b', value: { kind: 'primitive', value: 1 } }],
+          omittedCount: 0,
+        },
+      },
+    ],
+    omittedCount: 0,
+  };
+  const outer = renderValue(value);
+  document.body.appendChild(outer);
+
+  const outerPreview = outer.querySelector(':scope > .ugoku-preview') as HTMLElement;
+  outer.click();
+  expect(outerPreview.hidden).toBe(true);
+
+  const outerExpanded = outer.querySelector(':scope > .ugoku-expanded') as HTMLElement;
+  const inner = outerExpanded.querySelector('.ugoku-composite') as HTMLElement;
+  const innerPreview = inner.querySelector(':scope > .ugoku-preview') as HTMLElement;
+
+  inner.click();
+
+  expect(innerPreview.hidden).toBe(true);
+  expect(outerPreview.hidden).toBe(true);
+  expect(inner.querySelector(':scope > .ugoku-expanded')).not.toBeNull();
+
+  document.body.removeChild(outer);
+});
+
 test('renders a circular reference and a pending promise as plain text', () => {
   expect(renderValue({ kind: 'circular', label: '[Circular *1]' }).textContent).toBe('[Circular *1]');
   expect(renderValue({ kind: 'promise' }).textContent).toBe('Promise {<pending>}');
