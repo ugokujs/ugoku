@@ -50,6 +50,7 @@ function mountOne(pre: HTMLElement): void {
 
   runBtn.addEventListener('click', () => {
     panel.clear();
+    panel.element.hidden = true;
     setRunning(true);
     const handle = runCode(source, {
       onConsole(level, args) {

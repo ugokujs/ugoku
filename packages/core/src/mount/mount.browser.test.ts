@@ -90,7 +90,11 @@ test('clicking Run executes the pre source and renders console output', async ()
 });
 
 test('clicking Run a second time clears the previous output', async () => {
-  const pre = createPre('run', 'console.log("hello")');
+  // Logs a fresh random value each run (rather than fixed text) because mount()
+  // captures the pre's source once at mount time, so both clicks execute the
+  // same string — a random value per execution is what makes the two runs'
+  // output distinguishable without relying on a coincidental line count.
+  const pre = createPre('run', 'console.log(crypto.randomUUID())');
   mount(document.body);
 
   const controls = pre.nextElementSibling as HTMLElement;
@@ -99,9 +103,19 @@ test('clicking Run a second time clears the previous output', async () => {
 
   runBtn.click();
   await vi.waitFor(() => expect(panel.querySelectorAll('.ugoku-line').length).toBe(1));
+  const firstLine = panel.querySelector('.ugoku-line')?.textContent;
+
+  // Guarantee the first run has actually finished (button re-enabled) before
+  // clicking again — otherwise this click could be a no-op on a disabled
+  // button and the assertions below would pass trivially against leftover
+  // first-run output.
+  await vi.waitFor(() => expect(runBtn.disabled).toBe(false));
 
   runBtn.click();
   await vi.waitFor(() => expect(panel.querySelectorAll('.ugoku-line').length).toBe(1));
+  const secondLine = panel.querySelector('.ugoku-line')?.textContent;
+
+  expect(secondLine).not.toBe(firstLine);
 
   unmount(document.body);
   pre.remove();
