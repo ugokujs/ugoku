@@ -572,7 +572,7 @@ export function serializeValue(value: unknown): SerializedValue {
 - [ ] **Step 4: Run the tests to verify they pass**
 
 Run: `pnpm test serialize-value`
-Expected: PASS, 13 tests.
+Expected: PASS, 14 tests.
 
 - [ ] **Step 5: Commit**
 
