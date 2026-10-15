@@ -55,3 +55,15 @@ test('stops auto-scrolling once the reader scrolls away from the bottom', () => 
 
   cleanup();
 });
+
+test('clear() removes all previously appended lines', () => {
+  const panel = new OutputPanel();
+  panel.appendConsole({ level: 'log', args: [{ kind: 'primitive', value: 'first' }] });
+  panel.appendConsole({ level: 'log', args: [{ kind: 'primitive', value: 'second' }] });
+  expect(panel.element.children.length).toBe(2);
+
+  panel.clear();
+
+  expect(panel.element.children.length).toBe(0);
+  expect(panel.element.textContent).toBe('');
+});

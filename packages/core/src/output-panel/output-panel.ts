@@ -34,6 +34,10 @@ export class OutputPanel {
     this.appendLine(line);
   }
 
+  clear(): void {
+    this.element.replaceChildren();
+  }
+
   private appendLine(line: HTMLElement): void {
     const wasAtBottom = this.isAtBottom();
     this.element.appendChild(line);
