@@ -1,0 +1,47 @@
+.ugoku-output-panel {
+  font-family: var(--ugoku-font-mono, ui-monospace, monospace);
+  font-size: 0.875em;
+  white-space: pre-wrap;
+}
+
+.ugoku-line {
+  padding: 0.125em 0;
+}
+
+.ugoku-line-run-error {
+  color: var(--ugoku-color-error, #e5534b);
+}
+
+.ugoku-run-error-banner {
+  display: inline-block;
+  margin-right: 0.5em;
+  padding: 0 0.5em;
+  background: var(--ugoku-color-error, #e5534b);
+  color: #fff;
+  border-radius: 0.25em;
+}
+
+.ugoku-string { color: var(--ugoku-color-string, #22863a); }
+.ugoku-number { color: var(--ugoku-color-number, #005cc5); }
+.ugoku-boolean { color: var(--ugoku-color-boolean, #d73a49); }
+.ugoku-null { color: var(--ugoku-color-boolean, #d73a49); font-style: italic; }
+.ugoku-key { color: var(--ugoku-color-key, inherit); }
+.ugoku-class-name { color: var(--ugoku-color-class, #6f42c1); }
+.ugoku-special { color: var(--ugoku-color-special, #6a737d); font-style: italic; }
+.ugoku-punctuation { color: var(--ugoku-color-punctuation, #6a737d); }
+
+.ugoku-composite {
+  cursor: pointer;
+}
+
+.ugoku-toggle {
+  display: inline-block;
+  width: 1em;
+  color: var(--ugoku-color-punctuation, #6a737d);
+}
+
+.ugoku-error-stack {
+  margin: 0.25em 0 0 1em;
+  color: var(--ugoku-color-special, #6a737d);
+  white-space: pre;
+}
