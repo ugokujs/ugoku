@@ -17,7 +17,7 @@
   margin-right: 0.5em;
   padding: 0 0.5em;
   background: var(--ugoku-color-error, #e5534b);
-  color: #fff;
+  color: var(--ugoku-color-banner-text, #fff);
   border-radius: 0.25em;
 }
 
