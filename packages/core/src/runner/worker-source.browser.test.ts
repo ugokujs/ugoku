@@ -99,3 +99,35 @@ test('posts error, not done, for an exception thrown inside a setTimeout callbac
     error: { message: 'late boom' },
   });
 });
+
+test('serializes non-primitive console args as placeholder previews', async () => {
+  const worker = createTestWorker();
+  const messages: unknown[] = [];
+
+  await new Promise<void>((resolve) => {
+    worker.onmessage = (event) => {
+      messages.push(event.data);
+      if ((event.data as { type: string }).type === 'done') resolve();
+    };
+    worker.postMessage({
+      type: 'run',
+      runId: 'test-5',
+      source: `console.log({ a: 1 }, [1, 2])`,
+      timeoutMs: 1000,
+    });
+  });
+
+  worker.terminate();
+  expect(messages).toEqual([
+    {
+      type: 'console',
+      runId: 'test-5',
+      level: 'log',
+      args: [
+        { kind: 'placeholder', preview: '[object Object]' },
+        { kind: 'placeholder', preview: '1,2' },
+      ],
+    },
+    { type: 'done', runId: 'test-5' },
+  ]);
+});
