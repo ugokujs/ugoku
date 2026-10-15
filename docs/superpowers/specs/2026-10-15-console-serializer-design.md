@@ -42,7 +42,7 @@ This is the only part of the protocol that changes: `ConsoleMessage.args: Serial
 
 **Property selection:** `object` entries are own enumerable string-keyed properties only, in insertion order — symbol-keyed and inherited properties are excluded. `array`/`set` items preserve iteration order; `map` entries preserve insertion order.
 
-**Preview generation** is a separate, shallower pass from the full recursive build: a composite's `preview` string renders its own keys/items one level deep, but any *nested* composite inside that preview is abbreviated as a type+count placeholder (`Array(2)`, `Map(3)`, a class name, etc.) rather than recursed into. This is what produces `{user: {name: 'Sam', roles: Array(2)}}` instead of a fully expanded nested structure in the collapsed view.
+**Preview generation** is not a separate pass — it falls out of the same depth-limited tree, computed bottom-up as each node is built. A composite's `preview` renders its own children inline, one-line: a child with real `entries`/`items` (not depth-limited) renders its full content recursively (which itself follows the same rule); a child that hit the depth cap (`entries`/`items: null`) renders as its own terse `Type(N)` summary (`Array(2)`, `Map(3)`, a bare class name count, etc.), computed directly from the raw value's length/size with no recursion. This is what produces `{user: {name: 'Sam', roles: Array(2)}}` at `maxDepth = 2`: `user` is at depth 1 (real entries), so its own keys (`name`, `roles`) render inline; `roles` is an array at depth 2, which hit the cap, so it renders as its terse `Array(2)` summary instead of its contents.
 
 ## Special-case scalars
 
