@@ -100,7 +100,7 @@ test('posts error, not done, for an exception thrown inside a setTimeout callbac
   });
 });
 
-test('serializes non-primitive console args as placeholder previews', async () => {
+test('serializes non-primitive console args using the real serializer', async () => {
   const worker = createTestWorker();
   const messages: unknown[] = [];
 
@@ -124,8 +124,22 @@ test('serializes non-primitive console args as placeholder previews', async () =
       runId: 'test-5',
       level: 'log',
       args: [
-        { kind: 'placeholder', preview: '[object Object]' },
-        { kind: 'placeholder', preview: '1,2' },
+        {
+          kind: 'object',
+          preview: '{ a: 1 }',
+          className: null,
+          entries: [{ key: 'a', value: { kind: 'primitive', value: 1 } }],
+          omittedCount: 0,
+        },
+        {
+          kind: 'array',
+          preview: '[ 1, 2 ]',
+          items: [
+            { kind: 'primitive', value: 1 },
+            { kind: 'primitive', value: 2 },
+          ],
+          omittedCount: 0,
+        },
       ],
     },
     { type: 'done', runId: 'test-5' },

@@ -1,6 +1,6 @@
-export type SerializedValue =
-  | { kind: 'primitive'; value: string | number | boolean | null | undefined }
-  | { kind: 'placeholder'; preview: string };
+import type { SerializedValue } from '../serializer/types';
+
+export type { SerializedValue };
 
 export interface SerializedError {
   name: string;
