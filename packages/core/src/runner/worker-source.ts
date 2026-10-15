@@ -48,6 +48,7 @@ self.clearInterval = (id) => {
 };
 
 let currentRunId = null;
+let settled = false;
 
 for (const level of ['log', 'warn', 'error', 'info', 'debug']) {
   console[level] = (...args) => {
@@ -55,9 +56,35 @@ for (const level of ['log', 'warn', 'error', 'info', 'debug']) {
   };
 }
 
+function postDone(runId) {
+  if (settled) return;
+  settled = true;
+  self.postMessage({ type: 'done', runId });
+}
+
+function postError(runId, error) {
+  if (settled) return;
+  settled = true;
+  self.postMessage({
+    type: 'error',
+    runId,
+    error: { name: error?.name ?? 'Error', message: error?.message ?? String(error), stack: error?.stack },
+  });
+}
+
+self.addEventListener('error', (event) => {
+  postError(currentRunId, event.error ?? new Error(event.message));
+  event.preventDefault();
+});
+
+self.addEventListener('unhandledrejection', (event) => {
+  postError(currentRunId, event.reason);
+});
+
 function waitForIdle(runId) {
+  if (settled) return;
   if (pendingTimers === 0) {
-    self.postMessage({ type: 'done', runId });
+    postDone(runId);
     return;
   }
   nativeSetTimeout(() => waitForIdle(runId), 10);
@@ -72,11 +99,7 @@ self.onmessage = async (event) => {
     await import(userUrl);
     waitForIdle(message.runId);
   } catch (error) {
-    self.postMessage({
-      type: 'error',
-      runId: message.runId,
-      error: { name: error?.name ?? 'Error', message: error?.message ?? String(error), stack: error?.stack },
-    });
+    postError(message.runId, error);
   }
 };
 `;

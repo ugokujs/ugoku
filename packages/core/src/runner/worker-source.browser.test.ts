@@ -71,3 +71,31 @@ test('waits for a pending setTimeout before posting done', async () => {
     { type: 'done', runId: 'test-3' },
   ]);
 });
+
+test('posts error, not done, for an exception thrown inside a setTimeout callback', async () => {
+  const worker = createTestWorker();
+  const messages: unknown[] = [];
+
+  await new Promise<void>((resolve) => {
+    worker.onmessage = (event) => {
+      messages.push(event.data);
+      resolve();
+    };
+    worker.postMessage({
+      type: 'run',
+      runId: 'test-4',
+      source: `setTimeout(() => { throw new Error('late boom'); }, 20)`,
+      timeoutMs: 1000,
+    });
+  });
+
+  await new Promise((resolve) => setTimeout(resolve, 50));
+  worker.terminate();
+
+  expect(messages).toHaveLength(1);
+  expect(messages[0]).toMatchObject({
+    type: 'error',
+    runId: 'test-4',
+    error: { message: 'late boom' },
+  });
+});
