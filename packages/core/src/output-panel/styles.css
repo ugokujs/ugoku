@@ -64,8 +64,13 @@ pre[data-ugoku-mode='run-edit'] {
   background: transparent;
   color: transparent;
   caret-color: var(--ugoku-color-caret, #6a737d);
-  font: inherit;
-  line-height: inherit;
+  /* `font: inherit` would inherit from this overlay's actual parent (<pre>),
+     but VitePress sets font-size/line-height on <code>, not <pre> — so that
+     inherited straight from <pre> and ends up body-sized. Use the same
+     variables VitePress's own <code> rule reads instead. */
+  font-family: var(--vp-font-family-mono, ui-monospace, monospace);
+  font-size: var(--vp-code-font-size, 0.875em);
+  line-height: var(--vp-code-line-height, 1.7);
   white-space: pre;
   overflow: auto;
 }

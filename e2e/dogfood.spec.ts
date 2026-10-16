@@ -85,6 +85,30 @@ test('the edit overlay is actually styled as a transparent overlay, not an opaqu
   await expect(overlay).toHaveValue(/total/);
 });
 
+test('the focused overlay matches the highlighted code\'s font exactly, not the page body font', async ({ page }) => {
+  await page.goto('/');
+
+  const pre = page.locator('pre[data-ugoku-mode="run-edit"]');
+  const overlay = pre.locator('.ugoku-edit-overlay');
+  await overlay.click();
+
+  // `font: inherit` would inherit from the overlay's actual DOM parent
+  // (<pre>), but VitePress sets font-size/line-height on <code>, not <pre> —
+  // so an overlay relying on inheritance ends up body-sized instead of
+  // matching the visibly rendered code.
+  const [codeFont, overlayFont] = await Promise.all([
+    pre.locator('code').evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return { fontFamily: cs.fontFamily, fontSize: cs.fontSize, lineHeight: cs.lineHeight };
+    }),
+    overlay.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return { fontFamily: cs.fontFamily, fontSize: cs.fontSize, lineHeight: cs.lineHeight };
+    }),
+  ]);
+  expect(overlayFont).toEqual(codeFont);
+});
+
 test('a re-highlighted run-edit block keeps dark-theme colors after an edit, instead of resetting to light', async ({
   page,
 }) => {
