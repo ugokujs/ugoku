@@ -1,3 +1,5 @@
+import './output-panel/styles.css';
+
 export { runCode } from './runner/index.ts';
 export type {
   RunCodeCallbacks,

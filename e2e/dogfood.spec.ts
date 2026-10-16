@@ -45,3 +45,26 @@ test('editing a run-edit block persists across reload, re-highlights, and Reset 
   await resetBtn.click();
   await expect(reloadedOverlay).toHaveValue('');
 });
+
+test('the edit overlay is actually styled as a transparent overlay, not an opaque textarea', async ({ page }) => {
+  await page.goto('/');
+
+  const pre = page.locator('pre[data-ugoku-mode="run-edit"]');
+  const overlay = pre.locator('.ugoku-edit-overlay');
+
+  const overlayStyles = await overlay.evaluate((el) => {
+    const cs = getComputedStyle(el);
+    return { position: cs.position, color: cs.color, backgroundColor: cs.backgroundColor };
+  });
+  expect(overlayStyles.position).toBe('absolute');
+  expect(overlayStyles.color).toBe('rgba(0, 0, 0, 0)');
+  expect(overlayStyles.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+
+  const preStyles = await pre.evaluate((el) => getComputedStyle(el).position);
+  expect(preStyles).toBe('relative');
+
+  // The original highlighted code must still be visible/readable underneath
+  // the overlay before any edit — this is the actual bug a missing CSS
+  // import would cause (an opaque textarea hiding the code entirely).
+  await expect(pre.locator('code')).toContainText('total');
+});
