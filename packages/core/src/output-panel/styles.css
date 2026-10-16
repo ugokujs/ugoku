@@ -45,3 +45,26 @@
   color: var(--ugoku-color-special, #6a737d);
   white-space: pre;
 }
+
+pre[data-ugoku-mode='run-edit'] {
+  position: relative;
+}
+
+.ugoku-edit-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: transparent;
+  caret-color: var(--ugoku-color-caret, #6a737d);
+  font: inherit;
+  line-height: inherit;
+  white-space: pre;
+  overflow: auto;
+}
