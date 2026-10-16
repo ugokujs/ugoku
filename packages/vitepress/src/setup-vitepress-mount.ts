@@ -23,5 +23,18 @@ export function setupVitePressMount(router: VitePressRouterLike): void {
     if (originalAfter) return originalAfter(to);
   };
 
-  mount(document.body);
+  // `enhanceApp` runs before VitePress's Vue app actually mounts into the
+  // DOM, so document.body is still empty at this point. Wait for the
+  // initial render instead of mounting synchronously here.
+  if (document.querySelector('pre[data-ugoku-mode]')) {
+    mount(document.body);
+    return;
+  }
+  const observer = new MutationObserver(() => {
+    if (document.querySelector('pre[data-ugoku-mode]')) {
+      observer.disconnect();
+      mount(document.body);
+    }
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
 }
