@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "dev:docs": "pnpm --filter ugoku-docs dev"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",

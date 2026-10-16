@@ -1,0 +1,19 @@
+{
+  "name": "ugoku-docs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev .",
+    "build": "vitepress build .",
+    "preview": "vitepress preview ."
+  },
+  "devDependencies": {
+    "vitepress": "1.6.4"
+  },
+  "dependencies": {
+    "@ugoku/core": "workspace:*",
+    "@ugoku/shiki": "workspace:*",
+    "@ugoku/vitepress": "workspace:*"
+  }
+}
