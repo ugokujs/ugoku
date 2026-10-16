@@ -5,7 +5,8 @@
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "dev:docs": "pnpm --filter ugoku-docs dev"
+    "dev:docs": "pnpm --filter ugoku-docs dev",
+    "test:e2e": "pnpm --filter ugoku-e2e test"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
