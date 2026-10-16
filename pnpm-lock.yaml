@@ -38,6 +38,12 @@ importers:
         specifier: ^4.5.0
         version: 4.5.0
 
+  packages/vitepress:
+    dependencies:
+      '@ugoku/core':
+        specifier: workspace:*
+        version: link:../core
+
 packages:
 
   '@blazediff/core@1.10.0':
