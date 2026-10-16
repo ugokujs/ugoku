@@ -35,9 +35,16 @@ export async function highlightInto(pre: HTMLElement, code: string): Promise<voi
   if (unsupported) return;
 
   const highlighter = await getHighlighter();
+  // See editor.ts: defaultColor: false matches VitePress's own shiki output
+  // format (--shiki-light/--shiki-dark only, no baseline inline `color`),
+  // which its non-!important dark-mode CSS rule depends on.
   const html = singleTheme
     ? highlighter.codeToHtml(code, { lang, theme: singleTheme })
-    : highlighter.codeToHtml(code, { lang, themes: { light: lightTheme!, dark: darkTheme! } });
+    : highlighter.codeToHtml(code, {
+        lang,
+        themes: { light: lightTheme!, dark: darkTheme! },
+        defaultColor: false,
+      });
 
   spliceHighlightedHtml(pre, html);
 }

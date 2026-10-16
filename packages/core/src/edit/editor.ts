@@ -12,9 +12,18 @@ export async function highlightInto(pre: HTMLElement, code: string): Promise<voi
 
   const highlighter = await ensureLoaded(lang, themeNames);
 
+  // defaultColor: false matches VitePress's own shiki output: spans carry only
+  // --shiki-light/--shiki-dark custom properties, no baseline inline `color`.
+  // VitePress's CSS (.dark .vp-code span { color: var(--shiki-dark) }) has no
+  // !important, so a plain inline `color` (shiki's default) would always win
+  // and the block would stay stuck on the light theme after any rehighlight.
   const html = singleTheme
     ? highlighter.codeToHtml(code, { lang, theme: singleTheme })
-    : highlighter.codeToHtml(code, { lang, themes: { light: lightTheme!, dark: darkTheme! } });
+    : highlighter.codeToHtml(code, {
+        lang,
+        themes: { light: lightTheme!, dark: darkTheme! },
+        defaultColor: false,
+      });
 
   spliceHighlightedHtml(pre, html);
 }

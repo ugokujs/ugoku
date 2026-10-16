@@ -84,3 +84,38 @@ test('the edit overlay is actually styled as a transparent overlay, not an opaqu
   expect(focusedStyles.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
   await expect(overlay).toHaveValue(/total/);
 });
+
+test('a re-highlighted run-edit block keeps dark-theme colors after an edit, instead of resetting to light', async ({
+  page,
+}) => {
+  await page.goto('/');
+
+  await page.locator('.VPSwitchAppearance').first().click();
+  await expect(page.locator('html')).toHaveClass(/dark/);
+
+  const pre = page.locator('pre[data-ugoku-mode="run-edit"]');
+  const overlay = pre.locator('.ugoku-edit-overlay');
+  await overlay.click();
+  await overlay.fill('console.log("dark theme check");');
+  await page.locator('h1').click(); // blur -> flushes the debounced rehighlight
+  await page.waitForTimeout(500);
+
+  // VitePress's dark-mode span-color rule (`.dark .vp-code span { color:
+  // var(--shiki-dark) }`) only applies if the re-highlighted <pre> keeps the
+  // `vp-code` class and its spans carry no competing inline `color`.
+  await expect(pre).toHaveClass(/vp-code/);
+
+  // The outermost span per line is shiki's unstyled `.line` wrapper — the
+  // colored token spans are nested one level deeper.
+  const span = pre.locator('code .line span').first();
+  const { computedColor, shikiDarkVar } = await span.evaluate((el) => {
+    const shikiDark = el.getAttribute('style')?.match(/--shiki-dark:\s*([^;]+)/)?.[1]?.trim();
+    const probe = document.createElement('span');
+    if (shikiDark) probe.style.color = shikiDark;
+    document.body.appendChild(probe);
+    const resolved = getComputedStyle(probe).color;
+    probe.remove();
+    return { computedColor: getComputedStyle(el).color, shikiDarkVar: resolved };
+  });
+  expect(computedColor).toBe(shikiDarkVar);
+});

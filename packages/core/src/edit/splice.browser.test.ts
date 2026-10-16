@@ -13,14 +13,16 @@ function createPre(): HTMLElement {
   return pre;
 }
 
-test('spliceHighlightedHtml replaces class, style, and code innerHTML from the fresh markup', () => {
+test('spliceHighlightedHtml unions classes (preserving the pre\'s own) and replaces style and code innerHTML', () => {
   const pre = createPre();
   const freshHtml =
     '<pre class="shiki new-theme" style="background-color:#000"><code><span class="line">updated</span></code></pre>';
 
   spliceHighlightedHtml(pre, freshHtml);
 
-  expect(pre.className).toBe('shiki new-theme');
+  // "original-theme" simulates a host-added class (e.g. VitePress's `vp-code`)
+  // that shiki's raw rehighlight output never knows about — it must survive.
+  expect(pre.className).toBe('shiki original-theme new-theme');
   expect(pre.getAttribute('style')).toBe('background-color:#000');
   expect(pre.querySelector('code')?.innerHTML).toBe('<span class="line">updated</span>');
 
