@@ -69,9 +69,28 @@ describe('setupVitePressMount', () => {
 
     const result = await router.onBeforeRouteChange?.('/next-page');
 
-    expect(unmountSpy).toHaveBeenCalledTimes(1);
+    expect(unmountSpy).not.toHaveBeenCalled();
     expect(originalBefore).toHaveBeenCalledWith('/next-page');
     expect(result).toBe(false);
+
+    delete (globalThis as { document?: object }).document;
+  });
+
+  it('does not leave the page unmounted after a cancelled navigation', async () => {
+    (globalThis as { document?: object }).document = { body: {} };
+
+    const originalBefore = vi.fn().mockReturnValue(false);
+    const router: {
+      onBeforeRouteChange?: (to: string) => void | boolean | Promise<void | boolean>;
+    } = { onBeforeRouteChange: originalBefore };
+    setupVitePressMount(router);
+    mountSpy.mockClear();
+
+    const result = await router.onBeforeRouteChange?.('/next-page');
+
+    expect(result).toBe(false);
+    expect(unmountSpy).not.toHaveBeenCalled();
+    expect(mountSpy).not.toHaveBeenCalled();
 
     delete (globalThis as { document?: object }).document;
   });

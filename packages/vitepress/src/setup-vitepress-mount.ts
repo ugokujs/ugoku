@@ -12,8 +12,10 @@ export function setupVitePressMount(router: VitePressRouterLike): void {
   const originalAfter = router.onAfterRouteChange;
 
   router.onBeforeRouteChange = async (to) => {
+    const result = originalBefore ? await originalBefore(to) : undefined;
+    if (result === false) return false;
     unmount(document.body);
-    if (originalBefore) return originalBefore(to);
+    return result;
   };
 
   router.onAfterRouteChange = async (to) => {
