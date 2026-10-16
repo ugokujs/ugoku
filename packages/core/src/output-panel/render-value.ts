@@ -1,4 +1,4 @@
-import type { SerializedValue, ObjectEntry, MapEntry } from '../serializer/types';
+import type { SerializedValue, ObjectEntry, MapEntry } from '../serializer/types.ts';
 
 export function renderValue(value: SerializedValue): HTMLElement {
   switch (value.kind) {

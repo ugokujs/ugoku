@@ -6,7 +6,9 @@
     "lib": ["ES2022", "DOM", "WebWorker"],
     "strict": true,
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": ["node"],
+    "noEmit": true,
+    "allowImportingTsExtensions": true
   },
   "include": ["packages/*/src"]
 }

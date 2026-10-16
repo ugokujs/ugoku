@@ -1,5 +1,5 @@
-export { runCode } from './run-code';
-export type { RunCodeCallbacks, RunHandle } from './run-code';
+export { runCode } from './run-code.ts';
+export type { RunCodeCallbacks, RunHandle } from './run-code.ts';
 export type {
   SerializedValue,
   SerializedError,
@@ -9,4 +9,4 @@ export type {
   ErrorMessage,
   MainToWorkerMessage,
   WorkerToMainMessage,
-} from './protocol';
+} from './protocol.ts';

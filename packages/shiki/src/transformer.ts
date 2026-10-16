@@ -1,6 +1,6 @@
 import type { ShikiTransformer } from 'shiki';
-import { resolveMode } from './mode';
-import { hashSource } from './hash';
+import { resolveMode } from './mode.ts';
+import { hashSource } from './hash.ts';
 
 export function ugokuTransformer(): ShikiTransformer {
   return {

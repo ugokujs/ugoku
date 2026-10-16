@@ -1,4 +1,4 @@
-export { runCode } from './runner/index';
+export { runCode } from './runner/index.ts';
 export type {
   RunCodeCallbacks,
   RunHandle,
@@ -10,8 +10,8 @@ export type {
   ErrorMessage,
   MainToWorkerMessage,
   WorkerToMainMessage,
-} from './runner/index';
+} from './runner/index.ts';
 
-export { OutputPanel, renderValue } from './output-panel/index';
+export { OutputPanel, renderValue } from './output-panel/index.ts';
 
-export { mount, unmount } from './mount/index';
+export { mount, unmount } from './mount/index.ts';

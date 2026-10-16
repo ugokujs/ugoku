@@ -1,4 +1,4 @@
-import type { SerializedValue } from '../serializer/types';
+import type { SerializedValue } from '../serializer/types.ts';
 
 export type { SerializedValue };
 

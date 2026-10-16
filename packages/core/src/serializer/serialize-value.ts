@@ -1,4 +1,4 @@
-import type { SerializedValue, ObjectEntry, MapEntry } from './types';
+import type { SerializedValue, ObjectEntry, MapEntry } from './types.ts';
 
 // Embedded via .toString() into the worker bootstrap — must stay fully
 // self-contained (no module-level helpers, no closures over anything

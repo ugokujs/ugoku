@@ -1,5 +1,5 @@
-import { createWorkerSource } from './worker-source';
-import type { SerializedError, SerializedValue, WorkerToMainMessage } from './protocol';
+import { createWorkerSource } from './worker-source.ts';
+import type { SerializedError, SerializedValue, WorkerToMainMessage } from './protocol.ts';
 
 let workerSourceUrl: string | null = null;
 

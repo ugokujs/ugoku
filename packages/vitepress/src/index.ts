@@ -1,1 +1,1 @@
-export { setupVitePressMount } from './setup-vitepress-mount';
+export { setupVitePressMount } from './setup-vitepress-mount.ts';

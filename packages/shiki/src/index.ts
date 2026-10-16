@@ -1,1 +1,1 @@
-export { ugokuTransformer } from './transformer';
+export { ugokuTransformer } from './transformer.ts';

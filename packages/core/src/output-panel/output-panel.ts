@@ -1,5 +1,5 @@
-import { renderValue } from './render-value';
-import type { ConsoleMessage, SerializedError } from '../runner/protocol';
+import { renderValue } from './render-value.ts';
+import type { ConsoleMessage, SerializedError } from '../runner/protocol.ts';
 
 export class OutputPanel {
   readonly element: HTMLElement;

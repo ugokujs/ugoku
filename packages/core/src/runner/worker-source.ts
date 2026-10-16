@@ -1,4 +1,4 @@
-import { serializeValue } from '../serializer/serialize-value';
+import { serializeValue } from '../serializer/serialize-value.ts';
 
 export function createWorkerSource(): string {
   return `

@@ -1,7 +1,7 @@
-import { runCode } from '../runner/run-code';
-import type { RunHandle } from '../runner/run-code';
-import { OutputPanel } from '../output-panel/output-panel';
-import type { ConsoleMessage } from '../runner/protocol';
+import { runCode } from '../runner/run-code.ts';
+import type { RunHandle } from '../runner/run-code.ts';
+import { OutputPanel } from '../output-panel/output-panel.ts';
+import type { ConsoleMessage } from '../runner/protocol.ts';
 
 const activeRuns = new WeakMap<HTMLElement, RunHandle>();
 

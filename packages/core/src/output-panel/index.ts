@@ -1,2 +1,2 @@
-export { OutputPanel } from './output-panel';
-export { renderValue } from './render-value';
+export { OutputPanel } from './output-panel.ts';
+export { renderValue } from './render-value.ts';
