@@ -2,8 +2,11 @@ import { runCode } from '../runner/run-code.ts';
 import type { RunHandle } from '../runner/run-code.ts';
 import { OutputPanel } from '../output-panel/output-panel.ts';
 import type { ConsoleMessage } from '../runner/protocol.ts';
+import { createOverlay } from '../edit/overlay.ts';
+import { loadSavedEdit, saveEdit, clearSavedEdit } from '../edit/persistence.ts';
 
 const activeRuns = new WeakMap<HTMLElement, RunHandle>();
+const SAVE_DEBOUNCE_MS = 400;
 
 export function mount(root: ParentNode): void {
   const pres = root.querySelectorAll<HTMLElement>('pre[data-ugoku-mode]:not([data-ugoku-mounted])');
@@ -38,6 +41,11 @@ function mountOne(pre: HTMLElement): void {
   pre.insertAdjacentElement('afterend', controls);
   controls.insertAdjacentElement('afterend', panel.element);
 
+  let getCurrentSource = () => source;
+  if (pre.dataset.ugokuMode === 'run-edit') {
+    getCurrentSource = setupRunEdit(pre, controls, panel, source);
+  }
+
   function setRunning(running: boolean): void {
     runBtn.disabled = running;
     stopBtn.disabled = !running;
@@ -52,7 +60,7 @@ function mountOne(pre: HTMLElement): void {
     panel.clear();
     panel.element.hidden = true;
     setRunning(true);
-    const handle = runCode(source, {
+    const handle = runCode(getCurrentSource(), {
       onConsole(level, args) {
         panel.element.hidden = false;
         panel.appendConsole({ level: level as ConsoleMessage['level'], args });
@@ -76,9 +84,94 @@ function mountOne(pre: HTMLElement): void {
   pre.dataset.ugokuMounted = 'true';
 }
 
+function setupRunEdit(
+  pre: HTMLElement,
+  controls: HTMLElement,
+  panel: OutputPanel,
+  source: string,
+): () => string {
+  const hash = pre.dataset.ugokuHash ?? '';
+  const originalClassName = pre.className;
+  const originalStyle = pre.getAttribute('style');
+  const codeEl = pre.querySelector('code');
+  const originalCodeHTML = codeEl?.innerHTML ?? '';
+
+  const overlay = createOverlay(pre);
+  let hasBeenEdited = false;
+  let editChunkPromise: Promise<typeof import('../edit/editor.ts')> | null = null;
+  let saveTimer: ReturnType<typeof setTimeout> | undefined;
+
+  function loadEditChunk() {
+    if (!editChunkPromise) {
+      editChunkPromise = import('../edit/editor.ts');
+    }
+    return editChunkPromise;
+  }
+
+  async function rehighlight(code: string): Promise<void> {
+    try {
+      const mod = await loadEditChunk();
+      await mod.highlightInto(pre, code);
+    } catch {
+      panel.element.hidden = false;
+      panel.appendConsole({
+        level: 'warn',
+        args: [
+          {
+            kind: 'primitive',
+            value: 'ugoku: live syntax highlighting unavailable for this block — editing still works.',
+          },
+        ],
+      });
+    }
+  }
+
+  const saved = loadSavedEdit(hash);
+  if (saved !== null) {
+    overlay.value = saved;
+    hasBeenEdited = true;
+    void rehighlight(saved);
+  }
+
+  overlay.addEventListener('focus', () => {
+    void loadEditChunk();
+  });
+
+  overlay.addEventListener('input', () => {
+    hasBeenEdited = true;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      saveEdit(hash, overlay.value);
+      void rehighlight(overlay.value);
+    }, SAVE_DEBOUNCE_MS);
+  });
+
+  const resetBtn = document.createElement('button');
+  resetBtn.className = 'ugoku-reset-btn';
+  resetBtn.textContent = 'Reset';
+  resetBtn.addEventListener('click', () => {
+    clearTimeout(saveTimer);
+    clearSavedEdit(hash);
+    overlay.value = '';
+    hasBeenEdited = false;
+    pre.className = originalClassName;
+    if (originalStyle) {
+      pre.setAttribute('style', originalStyle);
+    } else {
+      pre.removeAttribute('style');
+    }
+    if (codeEl) codeEl.innerHTML = originalCodeHTML;
+  });
+  controls.append(resetBtn);
+
+  return () => (hasBeenEdited ? overlay.value : source);
+}
+
 function unmountOne(pre: HTMLElement): void {
   activeRuns.get(pre)?.stop();
   activeRuns.delete(pre);
+
+  pre.querySelector('.ugoku-edit-overlay')?.remove();
 
   // First call removes the controls div; .remove() shifts nextElementSibling
   // forward as a side effect, so the second call now removes the output panel.

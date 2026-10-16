@@ -26,12 +26,15 @@ test('mounts a controls row and a hidden output panel for a "run" pre', () => {
   pre.remove();
 });
 
-test('mounts a "run-edit" pre identically to "run"', () => {
+test('mounts a "run-edit" pre with an extra Reset button and an edit overlay', () => {
   const pre = createPre('run-edit', 'console.log(1)');
+  pre.dataset.ugokuHash = 'test-hash-1';
   mount(document.body);
 
   const controls = pre.nextElementSibling as HTMLElement;
   expect(controls.className).toBe('ugoku-controls');
+  expect(controls.querySelector('.ugoku-reset-btn')).not.toBeNull();
+  expect(pre.querySelector('.ugoku-edit-overlay')).not.toBeNull();
 
   unmount(document.body);
   pre.remove();
@@ -161,5 +164,110 @@ test('unmount stops an in-flight run and removes the injected elements', async (
   await new Promise((resolve) => setTimeout(resolve, 400));
   expect(panel.textContent).not.toContain('"late"');
 
+  pre.remove();
+});
+
+test('Run on a "run-edit" block executes the overlay value, not the original source', async () => {
+  const pre = createPre('run-edit', 'console.log("original")');
+  pre.dataset.ugokuHash = 'test-hash-2';
+  mount(document.body);
+
+  const overlay = pre.querySelector('.ugoku-edit-overlay') as HTMLTextAreaElement;
+  overlay.value = 'console.log("edited")';
+  overlay.dispatchEvent(new Event('input'));
+
+  const controls = pre.nextElementSibling as HTMLElement;
+  const panel = controls.nextElementSibling as HTMLElement;
+  const runBtn = controls.querySelector('.ugoku-run-btn') as HTMLButtonElement;
+
+  runBtn.click();
+  await vi.waitFor(() => expect(panel.textContent).toContain('edited'));
+
+  unmount(document.body);
+  pre.remove();
+});
+
+test('Reset on a "run-edit" block restores the original pre markup and clears the overlay', () => {
+  const pre = createPre('run-edit', 'console.log("original")');
+  pre.className = 'shiki original-theme';
+  pre.dataset.ugokuHash = 'test-hash-3';
+  mount(document.body);
+
+  const overlay = pre.querySelector('.ugoku-edit-overlay') as HTMLTextAreaElement;
+  overlay.value = 'console.log("edited")';
+  overlay.dispatchEvent(new Event('input'));
+
+  const controls = pre.nextElementSibling as HTMLElement;
+  const resetBtn = controls.querySelector('.ugoku-reset-btn') as HTMLButtonElement;
+  resetBtn.click();
+
+  expect(overlay.value).toBe('');
+  expect(pre.className).toBe('shiki original-theme');
+
+  unmount(document.body);
+  pre.remove();
+});
+
+test('a saved edit is restored into the overlay and eagerly re-highlighted on mount', async () => {
+  const pre = document.createElement('pre');
+  pre.dataset.ugokuMode = 'run-edit';
+  pre.dataset.ugokuHash = 'test-hash-4';
+  pre.dataset.ugokuLang = 'javascript';
+  pre.dataset.ugokuTheme = 'github-light';
+  const code = document.createElement('code');
+  code.textContent = 'console.log("original")';
+  pre.appendChild(code);
+  document.body.appendChild(pre);
+  localStorage.setItem('ugoku:edit:test-hash-4', 'console.log("restored")');
+
+  mount(document.body);
+
+  const overlay = pre.querySelector('.ugoku-edit-overlay') as HTMLTextAreaElement;
+  expect(overlay.value).toBe('console.log("restored")');
+  await vi.waitFor(() => expect(pre.className).toContain('shiki'));
+  expect(pre.querySelector('code')?.innerHTML).toContain('restored');
+
+  unmount(document.body);
+  localStorage.removeItem('ugoku:edit:test-hash-4');
+  pre.remove();
+});
+
+test('focusing the overlay twice before editing does not break re-highlighting on later input', async () => {
+  const pre = document.createElement('pre');
+  pre.dataset.ugokuMode = 'run-edit';
+  pre.dataset.ugokuHash = 'test-hash-6';
+  pre.dataset.ugokuLang = 'javascript';
+  pre.dataset.ugokuTheme = 'github-light';
+  const code = document.createElement('code');
+  code.textContent = 'console.log(1)';
+  pre.appendChild(code);
+  document.body.appendChild(pre);
+
+  mount(document.body);
+
+  const overlay = pre.querySelector('.ugoku-edit-overlay') as HTMLTextAreaElement;
+  overlay.dispatchEvent(new Event('focus'));
+  overlay.dispatchEvent(new Event('focus'));
+
+  overlay.value = 'console.log(2)';
+  overlay.dispatchEvent(new Event('input'));
+
+  await vi.waitFor(() => expect(pre.querySelector('code')?.innerHTML).toContain('2'));
+
+  unmount(document.body);
+  pre.remove();
+});
+
+test('unmount followed by mount again does not leave a duplicate overlay', () => {
+  const pre = createPre('run-edit', 'console.log(1)');
+  pre.dataset.ugokuHash = 'test-hash-5';
+
+  mount(document.body);
+  unmount(document.body);
+  mount(document.body);
+
+  expect(pre.querySelectorAll('.ugoku-edit-overlay').length).toBe(1);
+
+  unmount(document.body);
   pre.remove();
 });
