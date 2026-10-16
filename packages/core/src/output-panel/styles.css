@@ -79,6 +79,9 @@ pre[data-ugoku-mode='run-edit'] {
  * highlighted code entirely — no cross-element alignment required.
  */
 .ugoku-edit-overlay:focus {
-  background: var(--ugoku-color-edit-bg, #f6f8fa);
-  color: var(--ugoku-color-edit-text, #24292e);
+  /* --vp-code-block-* are VitePress's own code-block colors — reactive to
+     its light/dark toggle. Falls back to a static color for non-VitePress
+     hosts that don't define them. */
+  background-color: var(--vp-code-block-bg, var(--ugoku-color-edit-bg, #f6f8fa));
+  color: var(--vp-code-block-color, var(--ugoku-color-edit-text, #24292e));
 }
