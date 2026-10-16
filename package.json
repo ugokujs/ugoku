@@ -6,7 +6,9 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "dev:docs": "pnpm --filter ugoku-docs dev",
-    "test:e2e": "pnpm --filter ugoku-e2e test"
+    "test:e2e": "pnpm --filter ugoku-e2e test",
+    "build:edit-chunk": "pnpm --filter @ugoku/core build:edit-chunk",
+    "verify:edit-chunk": "pnpm build:edit-chunk && node scripts/verify-standalone-chunk.mjs"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",

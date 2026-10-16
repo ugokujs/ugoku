@@ -8,7 +8,13 @@
     ".": "./src/index.ts",
     "./edit": "./src/edit/editor.ts"
   },
+  "scripts": {
+    "build:edit-chunk": "node scripts/build-edit-chunk.mjs"
+  },
   "dependencies": {
     "shiki": "^4.5.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
   }
 }
