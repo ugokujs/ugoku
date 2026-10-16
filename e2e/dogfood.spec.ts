@@ -25,6 +25,8 @@ test('editing a run-edit block persists across reload, re-highlights, and Reset 
   await page.goto('/');
 
   const overlay = page.locator('pre[data-ugoku-mode="run-edit"] .ugoku-edit-overlay');
+  const originalValue = await overlay.inputValue();
+  expect(originalValue).toContain('total');
   await overlay.click();
   await overlay.fill('console.log("edited");');
 
@@ -43,7 +45,7 @@ test('editing a run-edit block persists across reload, re-highlights, and Reset 
 
   const resetBtn = page.locator('pre[data-ugoku-mode="run-edit"] + .ugoku-controls .ugoku-reset-btn');
   await resetBtn.click();
-  await expect(reloadedOverlay).toHaveValue('');
+  await expect(reloadedOverlay).toHaveValue(originalValue);
 });
 
 test('the edit overlay is actually styled as a transparent overlay, not an opaque textarea', async ({ page }) => {
@@ -67,4 +69,18 @@ test('the edit overlay is actually styled as a transparent overlay, not an opaqu
   // the overlay before any edit — this is the actual bug a missing CSS
   // import would cause (an opaque textarea hiding the code entirely).
   await expect(pre.locator('code')).toContainText('total');
+
+  // Focusing must flip the overlay to a fully opaque plain-text editor —
+  // the fix for "cursor nowhere near the text": a transparent caret can
+  // never be kept in sync with a separately-positioned highlighted <code>
+  // element, so focus mode abandons that sync requirement entirely by
+  // covering the code instead of layering invisibly on top of it.
+  await overlay.click();
+  const focusedStyles = await overlay.evaluate((el) => {
+    const cs = getComputedStyle(el);
+    return { color: cs.color, backgroundColor: cs.backgroundColor };
+  });
+  expect(focusedStyles.color).not.toBe('rgba(0, 0, 0, 0)');
+  expect(focusedStyles.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+  await expect(overlay).toHaveValue(/total/);
 });

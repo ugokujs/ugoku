@@ -131,6 +131,10 @@ function setupRunEdit(
     overlay.value = saved;
     hasBeenEdited = true;
     void rehighlight(saved);
+  } else {
+    // Pre-fill with the original source so focusing the (now opaque)
+    // overlay reveals editable text in place, not a blank box.
+    overlay.value = source;
   }
 
   overlay.addEventListener('focus', () => {
@@ -141,9 +145,22 @@ function setupRunEdit(
     hasBeenEdited = true;
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => {
+      saveTimer = undefined;
       saveEdit(hash, overlay.value);
       void rehighlight(overlay.value);
     }, SAVE_DEBOUNCE_MS);
+  });
+
+  overlay.addEventListener('blur', () => {
+    // The overlay goes transparent on blur, revealing the highlighted code
+    // underneath — flush any pending debounced save so that reveal isn't
+    // stale for the rest of the debounce window.
+    if (saveTimer !== undefined) {
+      clearTimeout(saveTimer);
+      saveTimer = undefined;
+      saveEdit(hash, overlay.value);
+      void rehighlight(overlay.value);
+    }
   });
 
   const resetBtn = document.createElement('button');
@@ -151,8 +168,9 @@ function setupRunEdit(
   resetBtn.textContent = 'Reset';
   resetBtn.addEventListener('click', () => {
     clearTimeout(saveTimer);
+    saveTimer = undefined;
     clearSavedEdit(hash);
-    overlay.value = '';
+    overlay.value = source;
     hasBeenEdited = false;
     pre.className = originalClassName;
     if (originalStyle) {

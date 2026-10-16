@@ -40,6 +40,18 @@ test('mounts a "run-edit" pre with an extra Reset button and an edit overlay', (
   pre.remove();
 });
 
+test('a "run-edit" overlay starts pre-filled with the original source when there is no saved edit', () => {
+  const pre = createPre('run-edit', 'console.log("original")');
+  pre.dataset.ugokuHash = 'test-hash-7';
+  mount(document.body);
+
+  const overlay = pre.querySelector('.ugoku-edit-overlay') as HTMLTextAreaElement;
+  expect(overlay.value).toBe('console.log("original")');
+
+  unmount(document.body);
+  pre.remove();
+});
+
 test('leaves a pre without data-ugoku-mode untouched', () => {
   const pre = document.createElement('pre');
   pre.textContent = 'plain code';
@@ -201,7 +213,7 @@ test('Reset on a "run-edit" block restores the original pre markup and clears th
   const resetBtn = controls.querySelector('.ugoku-reset-btn') as HTMLButtonElement;
   resetBtn.click();
 
-  expect(overlay.value).toBe('');
+  expect(overlay.value).toBe('console.log("original")');
   expect(pre.className).toBe('shiki original-theme');
 
   unmount(document.body);
