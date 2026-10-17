@@ -2,8 +2,11 @@ import { test, expect } from '@playwright/test';
 
 test('home page mounts run and run-edit blocks and Run produces output', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('pre[data-ugoku-mode="run"]')).toHaveAttribute('data-ugoku-mounted', 'true');
-  await expect(page.locator('pre[data-ugoku-mode="run-edit"]')).toHaveAttribute('data-ugoku-mounted', 'true');
+  await expect(page.locator('pre[data-ugoku-mode="run"]').first()).toHaveAttribute('data-ugoku-mounted', 'true');
+  await expect(page.locator('pre[data-ugoku-mode="run-edit"]').first()).toHaveAttribute(
+    'data-ugoku-mounted',
+    'true',
+  );
 
   await page.locator('.ugoku-run-btn').first().click();
   await expect(page.locator('.ugoku-output-panel').first()).toContainText('hello from home');
@@ -24,7 +27,9 @@ test('SPA navigation unmounts the old page and mounts the new one', async ({ pag
 test('editing a run-edit block persists across reload, re-highlights, and Reset restores it', async ({ page }) => {
   await page.goto('/');
 
-  const overlay = page.locator('pre[data-ugoku-mode="run-edit"] .ugoku-edit-overlay');
+  // .first() targets the JS run-edit block specifically — the page now also
+  // has a ts run-edit block (added for TypeScript execution coverage).
+  const overlay = page.locator('pre[data-ugoku-mode="run-edit"] .ugoku-edit-overlay').first();
   const originalValue = await overlay.inputValue();
   expect(originalValue).toContain('total');
   await overlay.click();
@@ -34,16 +39,16 @@ test('editing a run-edit block persists across reload, re-highlights, and Reset 
   await page.waitForTimeout(600);
   await page.reload();
 
-  const reloadedOverlay = page.locator('pre[data-ugoku-mode="run-edit"] .ugoku-edit-overlay');
+  const reloadedOverlay = page.locator('pre[data-ugoku-mode="run-edit"] .ugoku-edit-overlay').first();
   await expect(reloadedOverlay).toHaveValue('console.log("edited");');
-  await expect(page.locator('pre[data-ugoku-mode="run-edit"] code')).toContainText('edited');
+  await expect(page.locator('pre[data-ugoku-mode="run-edit"] code').first()).toContainText('edited');
 
-  const runBtn = page.locator('pre[data-ugoku-mode="run-edit"] + .ugoku-controls .ugoku-run-btn');
+  const runBtn = page.locator('pre[data-ugoku-mode="run-edit"] + .ugoku-controls .ugoku-run-btn').first();
   await runBtn.click();
-  const panel = page.locator('pre[data-ugoku-mode="run-edit"] + .ugoku-controls + .ugoku-output-panel');
+  const panel = page.locator('pre[data-ugoku-mode="run-edit"] + .ugoku-controls + .ugoku-output-panel').first();
   await expect(panel).toContainText('edited');
 
-  const resetBtn = page.locator('pre[data-ugoku-mode="run-edit"] + .ugoku-controls .ugoku-reset-btn');
+  const resetBtn = page.locator('pre[data-ugoku-mode="run-edit"] + .ugoku-controls .ugoku-reset-btn').first();
   await resetBtn.click();
   await expect(reloadedOverlay).toHaveValue(originalValue);
 });
@@ -51,7 +56,7 @@ test('editing a run-edit block persists across reload, re-highlights, and Reset 
 test('the edit overlay is actually styled as a transparent overlay, not an opaque textarea', async ({ page }) => {
   await page.goto('/');
 
-  const pre = page.locator('pre[data-ugoku-mode="run-edit"]');
+  const pre = page.locator('pre[data-ugoku-mode="run-edit"]').first();
   const overlay = pre.locator('.ugoku-edit-overlay');
 
   const overlayStyles = await overlay.evaluate((el) => {
@@ -88,7 +93,7 @@ test('the edit overlay is actually styled as a transparent overlay, not an opaqu
 test('the focused overlay matches the highlighted code\'s font exactly, not the page body font', async ({ page }) => {
   await page.goto('/');
 
-  const pre = page.locator('pre[data-ugoku-mode="run-edit"]');
+  const pre = page.locator('pre[data-ugoku-mode="run-edit"]').first();
   const overlay = pre.locator('.ugoku-edit-overlay');
   await overlay.click();
 
@@ -117,7 +122,7 @@ test('a re-highlighted run-edit block keeps dark-theme colors after an edit, ins
   await page.locator('.VPSwitchAppearance').first().click();
   await expect(page.locator('html')).toHaveClass(/dark/);
 
-  const pre = page.locator('pre[data-ugoku-mode="run-edit"]');
+  const pre = page.locator('pre[data-ugoku-mode="run-edit"]').first();
   const overlay = pre.locator('.ugoku-edit-overlay');
   await overlay.click();
   await overlay.fill('console.log("dark theme check");');
@@ -142,4 +147,30 @@ test('a re-highlighted run-edit block keeps dark-theme colors after an edit, ins
     return { computedColor: getComputedStyle(el).color, shikiDarkVar: resolved };
   });
   expect(computedColor).toBe(shikiDarkVar);
+});
+
+test('Run on a ts-lang "run" block strips types and executes successfully', async ({ page }) => {
+  await page.goto('/');
+
+  const runBtn = page.locator('pre[data-ugoku-mode="run"][data-ugoku-lang="ts"] + .ugoku-controls .ugoku-run-btn');
+  const panel = page.locator(
+    'pre[data-ugoku-mode="run"][data-ugoku-lang="ts"] + .ugoku-controls + .ugoku-output-panel',
+  );
+
+  await runBtn.click();
+  await expect(panel).toContainText('"sum:" 5');
+});
+
+test('Run on a ts-lang "run edit" block strips types and executes successfully', async ({ page }) => {
+  await page.goto('/');
+
+  const runBtn = page.locator(
+    'pre[data-ugoku-mode="run-edit"][data-ugoku-lang="ts"] + .ugoku-controls .ugoku-run-btn',
+  );
+  const panel = page.locator(
+    'pre[data-ugoku-mode="run-edit"][data-ugoku-lang="ts"] + .ugoku-controls + .ugoku-output-panel',
+  );
+
+  await runBtn.click();
+  await expect(panel).toContainText('"distance:" 5');
 });

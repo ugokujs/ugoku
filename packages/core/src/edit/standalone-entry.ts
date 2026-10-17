@@ -5,6 +5,7 @@ import typescript from 'shiki/langs/typescript.mjs';
 import githubLight from 'shiki/themes/github-light.mjs';
 import githubDark from 'shiki/themes/github-dark.mjs';
 import { spliceHighlightedHtml } from './splice.ts';
+import { normalizeLang } from '../lang.ts';
 import type { HighlighterCore } from 'shiki/core';
 
 const SUPPORTED_LANGS = new Set(['javascript', 'typescript']);
@@ -31,7 +32,9 @@ export async function highlightInto(pre: HTMLElement, code: string): Promise<voi
   const themeNames = singleTheme ? [singleTheme] : [lightTheme, darkTheme].filter((t): t is string => !!t);
 
   const unsupported =
-    !SUPPORTED_LANGS.has(lang) || themeNames.length === 0 || !themeNames.every((t) => SUPPORTED_THEMES.has(t));
+    !SUPPORTED_LANGS.has(normalizeLang(lang) ?? '') ||
+    themeNames.length === 0 ||
+    !themeNames.every((t) => SUPPORTED_THEMES.has(t));
   if (unsupported) return;
 
   const highlighter = await getHighlighter();

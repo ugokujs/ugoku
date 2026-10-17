@@ -283,3 +283,68 @@ test('unmount followed by mount again does not leave a duplicate overlay', () =>
   unmount(document.body);
   pre.remove();
 });
+
+test('Run on a "run" block with ugokuLang "typescript" strips types before executing', async () => {
+  const pre = createPre('run', 'const x: number = 1;\nconsole.log("stripped:", x);');
+  pre.dataset.ugokuLang = 'typescript';
+  mount(document.body);
+
+  const controls = pre.nextElementSibling as HTMLElement;
+  const panel = controls.nextElementSibling as HTMLElement;
+  const runBtn = controls.querySelector('.ugoku-run-btn') as HTMLButtonElement;
+
+  runBtn.click();
+  await vi.waitFor(() => expect(panel.textContent).toContain('stripped:'));
+
+  unmount(document.body);
+  pre.remove();
+});
+
+test('Run on a "typescript" block with a genuine syntax error shows the error and never starts a worker', async () => {
+  const pre = createPre('run', 'const x = ;');
+  pre.dataset.ugokuLang = 'typescript';
+  mount(document.body);
+
+  const controls = pre.nextElementSibling as HTMLElement;
+  const panel = controls.nextElementSibling as HTMLElement;
+  const runBtn = controls.querySelector('.ugoku-run-btn') as HTMLButtonElement;
+  const stopBtn = controls.querySelector('.ugoku-stop-btn') as HTMLButtonElement;
+
+  runBtn.click();
+  await vi.waitFor(() => expect(panel.hidden).toBe(false));
+
+  expect(panel.textContent).toContain('run failed');
+  expect(runBtn.disabled).toBe(false);
+  expect(stopBtn.disabled).toBe(true);
+
+  unmount(document.body);
+  pre.remove();
+});
+
+test('clicking Stop while the TypeScript strip chunk is loading cancels the pending run without ever starting a worker', async () => {
+  const pre = createPre('run', 'const x: number = 1;\nconsole.log("stripped:", x);');
+  pre.dataset.ugokuLang = 'typescript';
+  mount(document.body);
+
+  const controls = pre.nextElementSibling as HTMLElement;
+  const panel = controls.nextElementSibling as HTMLElement;
+  const runBtn = controls.querySelector('.ugoku-run-btn') as HTMLButtonElement;
+  const stopBtn = controls.querySelector('.ugoku-stop-btn') as HTMLButtonElement;
+
+  const workerSpy = vi.spyOn(window, 'Worker');
+
+  runBtn.click();
+  expect(stopBtn.disabled).toBe(false);
+  stopBtn.click();
+
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
+  expect(workerSpy).not.toHaveBeenCalled();
+  expect(runBtn.disabled).toBe(false);
+  expect(stopBtn.disabled).toBe(true);
+  expect(panel.textContent).toBe('');
+
+  workerSpy.mockRestore();
+  unmount(document.body);
+  pre.remove();
+});

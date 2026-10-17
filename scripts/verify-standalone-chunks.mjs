@@ -4,7 +4,8 @@ import path from 'node:path';
 import { chromium } from 'playwright';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
-const DIST_FILE = path.join(ROOT, 'packages/core/dist/edit-standalone.js');
+const EDIT_DIST_FILE = path.join(ROOT, 'packages/core/dist/edit-standalone.js');
+const TS_DIST_FILE = path.join(ROOT, 'packages/core/dist/ts-standalone.js');
 
 const FIXTURE_HTML = `<!doctype html>
 <html>
@@ -12,12 +13,27 @@ const FIXTURE_HTML = `<!doctype html>
 <pre data-ugoku-lang="typescript" data-ugoku-theme="github-light"><code>let x: number = 1;</code></pre>
 <script type="module">
   import { highlightInto } from '/edit-standalone.js';
+  import { stripTypes } from '/ts-standalone.js';
+
   const pre = document.querySelector('pre');
-  highlightInto(pre, pre.querySelector('code').textContent).then(() => {
-    document.title = pre.className.includes('shiki') ? 'DONE' : 'FAILED';
-  }).catch((e) => {
-    document.title = 'FAILED: ' + e.message;
-  });
+  const results = [];
+
+  highlightInto(pre, pre.querySelector('code').textContent)
+    .then(() => {
+      results.push(pre.className.includes('shiki') ? 'EDIT_OK' : 'EDIT_FAILED');
+    })
+    .catch((e) => {
+      results.push('EDIT_FAILED: ' + e.message);
+    })
+    .then(() => {
+      try {
+        const stripped = stripTypes('const x: number = 1; console.log(x);');
+        results.push(stripped.includes(': number') ? 'TS_FAILED: types not stripped' : 'TS_OK');
+      } catch (e) {
+        results.push('TS_FAILED: ' + e.message);
+      }
+      document.title = results.join(' | ');
+    });
 </script>
 </body>
 </html>`;
@@ -25,7 +41,12 @@ const FIXTURE_HTML = `<!doctype html>
 const server = createServer(async (req, res) => {
   if (req.url === '/edit-standalone.js') {
     res.setHeader('Content-Type', 'application/javascript');
-    res.end(await readFile(DIST_FILE));
+    res.end(await readFile(EDIT_DIST_FILE));
+    return;
+  }
+  if (req.url === '/ts-standalone.js') {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.end(await readFile(TS_DIST_FILE));
     return;
   }
   res.setHeader('Content-Type', 'text/html');
@@ -43,8 +64,8 @@ const title = await page.title();
 await browser.close();
 server.close();
 
-if (title !== 'DONE') {
+if (!title.includes('EDIT_OK') || !title.includes('TS_OK')) {
   console.error('FAILED:', title);
   process.exit(1);
 }
-console.log('PASS: standalone chunk re-highlighted a block with no bundler present');
+console.log('PASS:', title);

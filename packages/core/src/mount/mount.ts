@@ -1,12 +1,29 @@
 import { runCode } from '../runner/run-code.ts';
 import type { RunHandle } from '../runner/run-code.ts';
 import { OutputPanel } from '../output-panel/output-panel.ts';
-import type { ConsoleMessage } from '../runner/protocol.ts';
+import type { ConsoleMessage, SerializedError } from '../runner/protocol.ts';
 import { createOverlay } from '../edit/overlay.ts';
 import { loadSavedEdit, saveEdit, clearSavedEdit } from '../edit/persistence.ts';
+import { normalizeLang } from '../lang.ts';
 
 const activeRuns = new WeakMap<HTMLElement, RunHandle>();
 const SAVE_DEBOUNCE_MS = 400;
+
+let tsChunkPromise: Promise<typeof import('../ts/strip.ts')> | null = null;
+
+function loadTsChunk(): Promise<typeof import('../ts/strip.ts')> {
+  if (!tsChunkPromise) {
+    tsChunkPromise = import('../ts/strip.ts');
+  }
+  return tsChunkPromise;
+}
+
+function toSerializedError(error: unknown): SerializedError {
+  if (error instanceof Error) {
+    return { name: error.name, message: error.message, stack: error.stack };
+  }
+  return { name: 'Error', message: String(error) };
+}
 
 export function mount(root: ParentNode): void {
   const pres = root.querySelectorAll<HTMLElement>('pre[data-ugoku-mode]:not([data-ugoku-mounted])');
@@ -20,6 +37,7 @@ export function unmount(root: ParentNode): void {
 
 function mountOne(pre: HTMLElement): void {
   const source = pre.textContent ?? '';
+  const isTypeScript = normalizeLang(pre.dataset.ugokuLang) === 'typescript';
 
   const controls = document.createElement('div');
   controls.className = 'ugoku-controls';
@@ -56,11 +74,10 @@ function mountOne(pre: HTMLElement): void {
     activeRuns.delete(pre);
   }
 
-  runBtn.addEventListener('click', () => {
-    panel.clear();
-    panel.element.hidden = true;
-    setRunning(true);
-    const handle = runCode(getCurrentSource(), {
+  let stopRequestedBeforeRun = false;
+
+  function startRun(code: string): void {
+    const handle = runCode(code, {
       onConsole(level, args) {
         panel.element.hidden = false;
         panel.appendConsole({ level: level as ConsoleMessage['level'], args });
@@ -75,10 +92,79 @@ function mountOne(pre: HTMLElement): void {
       onStopped: finish,
     });
     activeRuns.set(pre, handle);
+  }
+
+  async function handleRunClick(): Promise<void> {
+    panel.clear();
+    panel.element.hidden = true;
+    setRunning(true);
+
+    let codeToRun = getCurrentSource();
+
+    if (isTypeScript) {
+      let mod: typeof import('../ts/strip.ts');
+      try {
+        mod = await loadTsChunk();
+      } catch {
+        if (stopRequestedBeforeRun) {
+          stopRequestedBeforeRun = false;
+          return;
+        }
+        panel.element.hidden = false;
+        panel.appendConsole({
+          level: 'warn',
+          args: [
+            {
+              kind: 'primitive',
+              value:
+                'ugoku: TypeScript execution unavailable for this block — could not load the type-stripping module.',
+            },
+          ],
+        });
+        finish();
+        return;
+      }
+
+      if (stopRequestedBeforeRun) {
+        stopRequestedBeforeRun = false;
+        return;
+      }
+
+      try {
+        codeToRun = mod.stripTypes(codeToRun);
+      } catch (error) {
+        panel.element.hidden = false;
+        panel.appendError(toSerializedError(error));
+        finish();
+        return;
+      }
+
+      if (stopRequestedBeforeRun) {
+        stopRequestedBeforeRun = false;
+        return;
+      }
+    }
+
+    startRun(codeToRun);
+  }
+
+  runBtn.addEventListener('click', () => {
+    void handleRunClick();
   });
 
   stopBtn.addEventListener('click', () => {
-    activeRuns.get(pre)?.stop();
+    const handle = activeRuns.get(pre);
+    if (handle) {
+      handle.stop();
+      return;
+    }
+    // No worker exists yet - the TypeScript strip chunk is still loading, or
+    // stripping itself hasn't finished. Cancel the pending run instead of
+    // waiting for it.
+    if (!stopBtn.disabled) {
+      stopRequestedBeforeRun = true;
+      finish();
+    }
   });
 
   pre.dataset.ugokuMounted = 'true';

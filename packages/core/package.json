@@ -6,13 +6,16 @@
   "main": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./edit": "./src/edit/editor.ts"
+    "./edit": "./src/edit/editor.ts",
+    "./ts": "./src/ts/strip.ts"
   },
   "scripts": {
-    "build:edit-chunk": "node scripts/build-edit-chunk.mjs"
+    "build:edit-chunk": "node scripts/build-edit-chunk.mjs",
+    "build:ts-chunk": "node scripts/build-ts-chunk.mjs"
   },
   "dependencies": {
-    "shiki": "^4.5.0"
+    "shiki": "^4.5.0",
+    "sucrase": "^3.35.1"
   },
   "devDependencies": {
     "esbuild": "^0.24.0"

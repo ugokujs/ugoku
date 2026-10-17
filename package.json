@@ -8,7 +8,8 @@
     "dev:docs": "pnpm --filter ugoku-docs dev",
     "test:e2e": "pnpm --filter ugoku-e2e test",
     "build:edit-chunk": "pnpm --filter @ugoku/core build:edit-chunk",
-    "verify:edit-chunk": "pnpm build:edit-chunk && node scripts/verify-standalone-chunk.mjs"
+    "build:ts-chunk": "pnpm --filter @ugoku/core build:ts-chunk",
+    "verify:standalone-chunks": "pnpm build:edit-chunk && pnpm build:ts-chunk && node scripts/verify-standalone-chunks.mjs"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
