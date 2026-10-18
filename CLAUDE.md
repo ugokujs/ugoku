@@ -31,7 +31,8 @@ Open source.
 - `@ugoku/core` — runtime, worker runner, output panel, serializer
 - `@ugoku/shiki` — the transformer
 - `@ugoku/vitepress` — thin adapter: transformer + theme route-change hook
-- `@ugoku/expressive-code` — later; needed to reach Astro Starlight users
+- `@ugoku/astro` — later; plain Astro adapter (markdown Shiki transformer hook + route-change mount, same shape as `@ugoku/vitepress`). Not Starlight — see `@ugoku/expressive-code`.
+- `@ugoku/expressive-code` — later; needed to reach Astro Starlight users (Starlight replaces Shiki with its own highlighter, so this is separate, harder work from the plain Astro adapter)
 - `ugoku` — unscoped; reserved / re-export of core (undecided)
 - `docs/` — VitePress site. The docs are the dogfood; every runnable example is also a test case.
 
@@ -56,7 +57,8 @@ Open source.
 - **v0 (done):** transformer with `run`; worker runner with timeout + Stop; streamed console panel with a good serializer; JS only; VitePress adapter; Playwright tests against the docs site.
 - **v0.2 (done):** `run edit` — overlay editor, lazy re-highlight, localStorage persistence + Reset.
 - **v0.3:** TypeScript via lazy-loaded type stripping (Sucrase, `ts` blocks only; no type-checking) — **done**. Custom grammar/theme loader hook (`registerLoader`) — pending.
-- **Later:** Expressive Code adapter; language plugins (e.g. Pyodide) as lazy-loaded opt-ins, never in core. Plugin shape: `run(code) → stream of output events`.
+- **v0.4 (proposed):** plain Astro adapter (`@ugoku/astro`) — Astro's markdown pipeline uses Shiki with transformer support same as VitePress, so this should be a thin adapter mirroring `@ugoku/vitepress`, not a new highlighting integration. Astro has substantially more general adoption than VitePress, making this a likely higher-leverage reach than Starlight support.
+- **Later:** Expressive Code adapter (Astro Starlight support — separate/harder than plain Astro, since Starlight doesn't use Shiki transformers); language plugins (e.g. Pyodide) as lazy-loaded opt-ins, never in core. Plugin shape: `run(code) → stream of output events`.
 
 ## Housekeeping
 
