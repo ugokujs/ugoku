@@ -64,6 +64,6 @@ Open source.
 - GitHub org `ugokujs`, repo `ugokujs/ugoku` — created.
 - Remaining: README, LICENSE, CI, flip packages from `private: true` / `0.0.0` to real publish config.
 
-## Developing features in this repo
+## Contributing
 
-See the `developing-ugoku-features` skill for the design → plan → implementation workflow and where those working files live.
+There is no required process or tooling for contributing — use whatever workflow you like. Note: `specs/` and `.superpowers/` are gitignored on purpose (local planning/scratch, not project content) — if your own tooling writes design docs or plans into a `specs/` folder, those won't be tracked here either.
