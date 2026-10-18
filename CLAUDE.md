@@ -26,7 +26,7 @@ Open source.
 - **Persistence (edit mode):** localStorage keyed by the original source hash, plus a Reset button. Author changes the snippet → hash changes → stale reader edits are discarded automatically.
 - **Size:** keep core tiny. Treat a size budget as a hard constraint and measure it in CI.
 
-## Packages (pnpm monorepo, proposed)
+## Packages (pnpm monorepo)
 
 - `@ugoku/core` — runtime, worker runner, output panel, serializer
 - `@ugoku/shiki` — the transformer
@@ -53,22 +53,17 @@ Open source.
 
 ## Roadmap
 
-- **v0:** transformer with `run`; worker runner with timeout + Stop; streamed console panel with a good serializer; JS only; VitePress adapter; Playwright tests against the docs site.
-- **v0.2:** `run edit` — overlay editor, lazy re-highlight, localStorage persistence + Reset.
-- **v0.3:** TypeScript via lazy-loaded type stripping (e.g. Sucrase, `ts` blocks only; no type-checking); custom grammar/theme loader hook.
+- **v0 (done):** transformer with `run`; worker runner with timeout + Stop; streamed console panel with a good serializer; JS only; VitePress adapter; Playwright tests against the docs site.
+- **v0.2 (done):** `run edit` — overlay editor, lazy re-highlight, localStorage persistence + Reset.
+- **v0.3:** TypeScript via lazy-loaded type stripping (Sucrase, `ts` blocks only; no type-checking) — **done**. Custom grammar/theme loader hook (`registerLoader`) — pending.
 - **Later:** Expressive Code adapter; language plugins (e.g. Pyodide) as lazy-loaded opt-ins, never in core. Plugin shape: `run(code) → stream of output events`.
-
-## Next up (pick one)
-
-- Scaffold the repo
-- Spec the worker ↔ main-thread message protocol
-- Spec the console serializer: a `util.inspect`-style display tree built inside the worker (postMessage can't clone functions/class instances). Must handle objects, arrays, Map, Set, errors with stacks, promises, circular refs, long-output truncation. This is where "feels nice" vs "feels janky" gets decided — spec it before coding.
 
 ## Housekeeping
 
-- Claim before coding: npm org `@ugoku`, placeholder `ugoku@0.0.0`, GitHub org/repo (fallbacks: `ugoku-dev`, `ugokujs`).
+- npm org `@ugoku` — claimed.
+- GitHub org `ugokujs`, repo `ugokujs/ugoku` — created.
+- Remaining: README, LICENSE, CI, flip packages from `private: true` / `0.0.0` to real publish config.
 
-## Working with David
+## Developing features in this repo
 
-- Direct and casual. Honest assessments over encouragement.
-- When asking him to choose, offer multiple-choice options rather than open-ended questions.
+See the `developing-ugoku-features` skill for the design → plan → implementation workflow and where those working files live.
