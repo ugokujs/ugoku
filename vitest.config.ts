@@ -18,7 +18,11 @@ export default defineConfig({
       {
         test: {
           name: 'node',
-          include: ['packages/shiki/**/*.test.ts', 'packages/vitepress/**/*.test.ts'],
+          include: [
+            'packages/shiki/**/*.test.ts',
+            'packages/vitepress/**/*.test.ts',
+            'packages/astro/**/*.test.ts',
+          ],
           environment: 'node',
         },
       },

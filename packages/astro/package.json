@@ -1,0 +1,18 @@
+{
+  "name": "@ugoku/astro",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts"
+  },
+  "dependencies": {
+    "@ugoku/core": "workspace:*",
+    "@ugoku/shiki": "workspace:*"
+  },
+  "devDependencies": {
+    "astro": "^5.0.0"
+  }
+}
