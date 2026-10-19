@@ -2,3 +2,5 @@ packages:
   - 'packages/*'
   - 'docs'
   - 'e2e'
+  - 'astro-fixture'
+  - 'e2e-astro'
