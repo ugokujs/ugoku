@@ -7,6 +7,7 @@
     "typecheck": "tsc --noEmit",
     "dev:docs": "pnpm --filter ugoku-docs dev",
     "test:e2e": "pnpm --filter ugoku-e2e test",
+    "test:e2e:astro": "pnpm --filter ugoku-e2e-astro test",
     "build:edit-chunk": "pnpm --filter @ugoku/core build:edit-chunk",
     "build:ts-chunk": "pnpm --filter @ugoku/core build:ts-chunk",
     "verify:standalone-chunks": "pnpm build:edit-chunk && pnpm build:ts-chunk && node scripts/verify-standalone-chunks.mjs"
