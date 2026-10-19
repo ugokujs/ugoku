@@ -5,11 +5,11 @@
 - **v0** — `run` blocks: build-time Shiki transformer, Web Worker runner with timeout + Stop, streamed console output with a proper serializer, JavaScript only, VitePress adapter.
 - **v0.2** — `run edit`: editable overlay, lazy re-highlighting, `localStorage` persistence with Reset.
 - **v0.3 (TypeScript)** — type annotations stripped in-browser via [Sucrase](https://github.com/alangpierce/sucrase) before execution. No type-checking — this only removes syntax that isn't valid JS.
+- **v0.4 (plain Astro)** — a single `@ugoku/astro` integration: add it to `integrations` in `astro.config.mjs` and both the Shiki transformer and the client mount/navigation script are wired automatically. Works under Astro's default full-page navigation and under its opt-in `<ClientRouter />` view transitions.
 
 ## In progress / next up
 
 - **v0.3 (loader hook)** — a `registerLoader` hook for custom grammars/themes not in Shiki's bundle.
-- **v0.4 — plain Astro adapter** (`@ugoku/astro`). Astro's markdown pipeline already runs through Shiki with transformer support, same hook VitePress uses — this should be a thin adapter mirroring `@ugoku/vitepress`, not a new highlighting integration. Astro has substantially broader general adoption than VitePress, which is why this is prioritized ahead of Starlight support below.
 
 ## Later
 
