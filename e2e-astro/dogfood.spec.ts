@@ -22,8 +22,10 @@ test('ClientRouter transitions mount/unmount blocks across a soft navigation, no
   await page.goto('/transitions/a');
   expect(loadEventCount).toBe(1);
 
-  await page.locator('.ugoku-run-btn').click();
-  await expect(page.locator('.ugoku-output-panel')).toContainText('hello from transitions a');
+  await page.locator('pre[data-ugoku-mode="run"] + .ugoku-controls .ugoku-run-btn').click();
+  await expect(
+    page.locator('pre[data-ugoku-mode="run"] + .ugoku-controls + .ugoku-output-panel'),
+  ).toContainText('hello from transitions a');
 
   await page.getByRole('link', { name: 'Go to B' }).click();
   await page.waitForURL('**/transitions/b');
@@ -37,4 +39,35 @@ test('ClientRouter transitions mount/unmount blocks across a soft navigation, no
 
   await page.locator('.ugoku-run-btn').click();
   await expect(page.locator('.ugoku-output-panel')).toContainText('hello from transitions b');
+});
+
+test("an active run edit block's worker is terminated when ClientRouter navigates away", async ({ page }) => {
+  await page.goto('/transitions/a');
+
+  const [worker] = await Promise.all([
+    page.waitForEvent('worker'),
+    page.locator('pre[data-ugoku-mode="run-edit"] + .ugoku-controls .ugoku-run-btn').click(),
+  ]);
+
+  await expect(
+    page.locator('pre[data-ugoku-mode="run-edit"] + .ugoku-controls + .ugoku-output-panel'),
+  ).toContainText('tick');
+
+  let workerClosed = false;
+  worker.once('close', () => {
+    workerClosed = true;
+  });
+
+  await page.getByRole('link', { name: 'Go to B' }).click();
+  await page.waitForURL('**/transitions/b');
+
+  // The runner's own timeout is 10s (packages/core/src/runner/run-code.ts).
+  // If unmount() didn't terminate the worker, it would eventually close on
+  // its own via that timeout — which would make this assertion pass for the
+  // wrong reason. Waiting only 3s (well under 10s) keeps this a true
+  // negative control: it fails if the worker is still alive this soon
+  // after navigating away, which is the only way it can still be alive if
+  // astro:before-swap -> unmount() -> stop() -> worker.terminate() ran.
+  await page.waitForTimeout(3000);
+  expect(workerClosed).toBe(true);
 });
