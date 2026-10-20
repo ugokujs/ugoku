@@ -71,3 +71,11 @@ test("an active run edit block's worker is terminated when ClientRouter navigate
   await page.waitForTimeout(3000);
   expect(workerClosed).toBe(true);
 });
+
+test("a second integration's own Shiki transformer composes with ugoku's, not overwritten by it", async ({ page }) => {
+  await page.goto('/');
+
+  const pre = page.locator('pre[data-ugoku-mode="run"]').first();
+  await expect(pre).toHaveAttribute('data-ugoku-mode', 'run');
+  await expect(pre).toHaveAttribute('data-dummy-transformer', 'true');
+});
