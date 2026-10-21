@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { createOverlay } from './overlay';
+import { createOverlay, syncOverlayFallbacks } from './overlay';
 
 function createPre(): HTMLElement {
   const pre = document.createElement('pre');
@@ -27,6 +27,31 @@ test('createOverlay disables spellcheck and native autocomplete', () => {
 
   expect(overlay.spellcheck).toBe(false);
   expect(overlay.getAttribute('autocomplete')).toBe('off');
+
+  pre.remove();
+});
+
+test('syncOverlayFallbacks copies the real rendered font metrics and colors from pre/code onto the overlay as CSS custom properties', () => {
+  const pre = document.createElement('pre');
+  pre.style.backgroundColor = 'rgb(36, 41, 46)';
+  pre.style.color = 'rgb(225, 228, 232)';
+
+  const code = document.createElement('code');
+  code.style.fontFamily = 'Menlo, monospace';
+  code.style.fontSize = '13px';
+  code.style.lineHeight = '20px';
+  code.textContent = 'let x = 1;';
+  pre.appendChild(code);
+  document.body.appendChild(pre);
+
+  const overlay = createOverlay(pre);
+  syncOverlayFallbacks(pre, overlay);
+
+  expect(overlay.style.getPropertyValue('--ugoku-color-edit-bg')).toBe('rgb(36, 41, 46)');
+  expect(overlay.style.getPropertyValue('--ugoku-color-edit-text')).toBe('rgb(225, 228, 232)');
+  expect(overlay.style.getPropertyValue('--ugoku-font-edit-family')).toBe('Menlo, monospace');
+  expect(overlay.style.getPropertyValue('--ugoku-font-edit-size')).toBe('13px');
+  expect(overlay.style.getPropertyValue('--ugoku-font-edit-line-height')).toBe('20px');
 
   pre.remove();
 });

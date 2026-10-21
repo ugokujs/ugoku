@@ -68,9 +68,9 @@ pre[data-ugoku-mode='run-edit'] {
      but VitePress sets font-size/line-height on <code>, not <pre> — so that
      inherited straight from <pre> and ends up body-sized. Use the same
      variables VitePress's own <code> rule reads instead. */
-  font-family: var(--vp-font-family-mono, ui-monospace, monospace);
-  font-size: var(--vp-code-font-size, 0.875em);
-  line-height: var(--vp-code-line-height, 1.7);
+  font-family: var(--vp-font-family-mono, var(--ugoku-font-edit-family, ui-monospace, monospace));
+  font-size: var(--vp-code-font-size, var(--ugoku-font-edit-size, 0.875em));
+  line-height: var(--vp-code-line-height, var(--ugoku-font-edit-line-height, 1.7));
   white-space: pre;
   overflow: auto;
 }

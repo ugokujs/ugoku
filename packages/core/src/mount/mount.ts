@@ -2,7 +2,7 @@ import { runCode } from '../runner/run-code.ts';
 import type { RunHandle } from '../runner/run-code.ts';
 import { OutputPanel } from '../output-panel/output-panel.ts';
 import type { ConsoleMessage, SerializedError } from '../runner/protocol.ts';
-import { createOverlay } from '../edit/overlay.ts';
+import { createOverlay, syncOverlayFallbacks } from '../edit/overlay.ts';
 import { loadSavedEdit, saveEdit, clearSavedEdit } from '../edit/persistence.ts';
 import { normalizeLang } from '../lang.ts';
 
@@ -183,6 +183,7 @@ function setupRunEdit(
   const originalCodeHTML = codeEl?.innerHTML ?? '';
 
   const overlay = createOverlay(pre);
+  syncOverlayFallbacks(pre, overlay);
   let hasBeenEdited = false;
   let editChunkPromise: Promise<typeof import('../edit/editor.ts')> | null = null;
   let saveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -224,6 +225,7 @@ function setupRunEdit(
   }
 
   overlay.addEventListener('focus', () => {
+    syncOverlayFallbacks(pre, overlay);
     void loadEditChunk();
   });
 
