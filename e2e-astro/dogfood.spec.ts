@@ -110,3 +110,19 @@ test("ugoku's CSS survives a ClientRouter soft navigation, not just the initial 
   await page.locator('.ugoku-run-btn').click();
   await expect(page.locator('.ugoku-output-panel')).toHaveCSS('white-space', 'pre-wrap');
 });
+
+test("a focused run-edit block's overlay matches the page's actual Shiki theme colors, not a hardcoded light fallback", async ({ page }) => {
+  await page.goto('/transitions/a');
+
+  const overlay = page.locator('pre[data-ugoku-mode="run-edit"] .ugoku-edit-overlay');
+  await overlay.click();
+
+  // astro-fixture uses Astro/Shiki's default 'github-dark' theme (#24292e
+  // background / #e1e4e8 text — confirmed against the live dev server's
+  // rendered <pre style="background-color:#24292e;color:#e1e4e8...">).
+  // Before the fix, focusing this overlay fell back to a hardcoded
+  // VitePress-light-theme guess (rgb(246, 248, 250) background), which is
+  // what this test would have caught.
+  await expect(overlay).toHaveCSS('background-color', 'rgb(36, 41, 46)');
+  await expect(overlay).toHaveCSS('color', 'rgb(225, 228, 232)');
+});
