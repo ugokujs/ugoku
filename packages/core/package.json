@@ -7,7 +7,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./edit": "./src/edit/editor.ts",
-    "./ts": "./src/ts/strip.ts"
+    "./ts": "./src/ts/strip.ts",
+    "./styles.css": "./src/output-panel/styles.css"
   },
   "scripts": {
     "build:edit-chunk": "node scripts/build-edit-chunk.mjs",

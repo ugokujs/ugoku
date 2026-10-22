@@ -79,3 +79,19 @@ test("a second integration's own Shiki transformer composes with ugoku's, not ov
   await expect(pre).toHaveAttribute('data-ugoku-mode', 'run');
   await expect(pre).toHaveAttribute('data-dummy-transformer', 'true');
 });
+
+test("ugoku's CSS actually reaches the page in a real production build, not just dev mode", async ({ page }) => {
+  await page.goto('/');
+
+  await page.locator('.ugoku-run-btn').click();
+  const panel = page.locator('.ugoku-output-panel');
+  await expect(panel).toBeVisible();
+
+  // .ugoku-output-panel sets white-space: pre-wrap in
+  // packages/core/src/output-panel/styles.css — a plain unstyled <div>
+  // defaults to white-space: normal, so this can only be 'pre-wrap' if
+  // the real CSS file loaded. e2e-astro's webServer runs a real
+  // `astro build` + `astro preview` (not `astro dev`), which is exactly
+  // where this CSS previously went missing.
+  await expect(panel).toHaveCSS('white-space', 'pre-wrap');
+});
