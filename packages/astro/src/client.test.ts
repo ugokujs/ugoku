@@ -2,15 +2,34 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // no static top-level import of '@ugoku/core' — must be dynamic, see beforeEach
 
+interface FakeLink {
+  rel: string;
+  href: string;
+  dataset: Record<string, string>;
+}
+
 interface FakeDocument {
   body: object;
+  head: {
+    querySelector: (selector: string) => FakeLink | null;
+    appendChild: (node: FakeLink) => void;
+  };
+  createElement: (tag: string) => FakeLink;
   addEventListener: (type: string, listener: () => void) => void;
 }
 
 function stubDocument(): { fakeDocument: FakeDocument; listeners: Record<string, () => void> } {
   const listeners: Record<string, () => void> = {};
+  let existingLink: FakeLink | null = null;
   const fakeDocument: FakeDocument = {
     body: {},
+    head: {
+      querySelector: (selector) => (selector === 'link[data-ugoku-styles]' ? existingLink : null),
+      appendChild: (node) => {
+        existingLink = node;
+      },
+    },
+    createElement: () => ({ rel: '', href: '', dataset: {} }),
     addEventListener: (type, listener) => {
       listeners[type] = listener;
     },
