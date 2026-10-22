@@ -95,3 +95,18 @@ test("ugoku's CSS actually reaches the page in a real production build, not just
   // where this CSS previously went missing.
   await expect(panel).toHaveCSS('white-space', 'pre-wrap');
 });
+
+test("ugoku's CSS survives a ClientRouter soft navigation, not just the initial page load", async ({ page }) => {
+  await page.goto('/transitions/a');
+
+  await page.locator('pre[data-ugoku-mode="run"] + .ugoku-controls .ugoku-run-btn').click();
+  await expect(
+    page.locator('pre[data-ugoku-mode="run"] + .ugoku-controls + .ugoku-output-panel'),
+  ).toHaveCSS('white-space', 'pre-wrap');
+
+  await page.getByRole('link', { name: 'Go to B' }).click();
+  await page.waitForURL('**/transitions/b');
+
+  await page.locator('.ugoku-run-btn').click();
+  await expect(page.locator('.ugoku-output-panel')).toHaveCSS('white-space', 'pre-wrap');
+});
