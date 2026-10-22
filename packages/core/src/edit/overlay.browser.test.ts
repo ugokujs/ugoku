@@ -55,3 +55,24 @@ test('syncOverlayFallbacks copies the real rendered font metrics and colors from
 
   pre.remove();
 });
+
+test("syncOverlayFallbacks sums pre's and code's real padding onto the overlay, so edit mode doesn't shift text that a host (e.g. VitePress) splits padding for between the two elements", () => {
+  const pre = document.createElement('pre');
+  pre.style.padding = '20px 0px';
+
+  const code = document.createElement('code');
+  code.style.padding = '0px 24px';
+  code.textContent = 'let x = 1;';
+  pre.appendChild(code);
+  document.body.appendChild(pre);
+
+  const overlay = createOverlay(pre);
+  syncOverlayFallbacks(pre, overlay);
+
+  expect(overlay.style.getPropertyValue('--ugoku-padding-edit-top')).toBe('20px');
+  expect(overlay.style.getPropertyValue('--ugoku-padding-edit-right')).toBe('24px');
+  expect(overlay.style.getPropertyValue('--ugoku-padding-edit-bottom')).toBe('20px');
+  expect(overlay.style.getPropertyValue('--ugoku-padding-edit-left')).toBe('24px');
+
+  pre.remove();
+});

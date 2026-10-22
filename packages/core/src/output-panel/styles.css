@@ -56,7 +56,8 @@ pre[data-ugoku-mode='run-edit'] {
   width: 100%;
   height: 100%;
   margin: 0;
-  padding: 1.25rem 1.5rem;
+  padding: var(--ugoku-padding-edit-top, 1.25rem) var(--ugoku-padding-edit-right, 1.5rem)
+    var(--ugoku-padding-edit-bottom, 1.25rem) var(--ugoku-padding-edit-left, 1.5rem);
   box-sizing: border-box;
   border: none;
   outline: none;

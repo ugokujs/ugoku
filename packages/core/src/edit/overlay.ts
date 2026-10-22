@@ -18,4 +18,17 @@ export function syncOverlayFallbacks(pre: HTMLElement, overlay: HTMLTextAreaElem
   const preStyle = getComputedStyle(pre);
   overlay.style.setProperty('--ugoku-color-edit-bg', preStyle.backgroundColor);
   overlay.style.setProperty('--ugoku-color-edit-text', preStyle.color);
+
+  // Some hosts (e.g. VitePress) split a code block's padding between <pre>
+  // and <code> rather than putting it all on one element. Summing both
+  // sides here reproduces the real text inset regardless of how a host
+  // divides it, instead of guessing a single fixed value.
+  const sumPx = (a: string, b: string) => `${parseFloat(a) + parseFloat(b)}px`;
+  overlay.style.setProperty('--ugoku-padding-edit-top', sumPx(preStyle.paddingTop, codeStyle.paddingTop));
+  overlay.style.setProperty('--ugoku-padding-edit-right', sumPx(preStyle.paddingRight, codeStyle.paddingRight));
+  overlay.style.setProperty(
+    '--ugoku-padding-edit-bottom',
+    sumPx(preStyle.paddingBottom, codeStyle.paddingBottom),
+  );
+  overlay.style.setProperty('--ugoku-padding-edit-left', sumPx(preStyle.paddingLeft, codeStyle.paddingLeft));
 }
