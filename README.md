@@ -7,7 +7,7 @@ Lightweight, local-first runnable code snippets for sites that use [Shiki](https
 
 Add `run` to a fenced code block; readers get a Run button and streamed console output. Everything executes in the reader's browser — no server, works offline after first load.
 
-**Status: pre-release.** The core (JS + TypeScript execution, editable blocks, VitePress integration) works and is dogfooded on this repo's own docs site, but packages aren't published to npm yet. See the [roadmap](./docs/roadmap.md) for what's done and what's next.
+**Status: early, but published.** The core (JS + TypeScript execution, editable blocks, VitePress + plain Astro integrations) works and is dogfooded on this repo's own docs site. See the [roadmap](./docs/roadmap.md) for what's done and what's next.
 
 ## How it works
 
@@ -59,7 +59,7 @@ console.log(add(2, 3));
 ```
 ````
 
-VitePress is the only integration today. An adapter for plain Astro is next up on the [roadmap](./docs/roadmap.md) — Astro Starlight support is separate, harder work and comes later.
+VitePress and plain Astro are supported today — see [`@ugoku/astro`](./packages/astro/README.md) for the Astro setup. Astro Starlight support is separate, harder work and comes later (see the [roadmap](./docs/roadmap.md)).
 
 ## Languages
 
@@ -70,12 +70,11 @@ VitePress is the only integration today. An adapter for plain Astro is next up o
 
 | Package | Purpose |
 | --- | --- |
-| `@ugoku/core` | Runtime: worker runner, output panel, console serializer, edit overlay, TS stripping |
-| `@ugoku/shiki` | The build-time Shiki transformer |
-| `@ugoku/vitepress` | VitePress adapter (transformer wiring + SPA route-change mount) |
+| [`@ugoku/core`](./packages/core/README.md) | Runtime: worker runner, output panel, console serializer, edit overlay, TS stripping |
+| [`@ugoku/shiki`](./packages/shiki/README.md) | The build-time Shiki transformer |
+| [`@ugoku/vitepress`](./packages/vitepress/README.md) | VitePress adapter (transformer wiring + SPA route-change mount) |
+| [`@ugoku/astro`](./packages/astro/README.md) | Plain Astro adapter (single auto-wiring integration) |
 | `docs/` | The VitePress dogfood site — every runnable example doubles as an e2e test case |
-
-All packages are currently `private` and unpublished.
 
 ## Contributing
 
