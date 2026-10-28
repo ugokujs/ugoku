@@ -1,6 +1,29 @@
-# Home
+---
+layout: home
+hero:
+  name: "ugoku"
+  tagline: "Add <code>run</code> to a code fence and readers get a Run button with live console output. No server involved, and it keeps working offline."
+  actions:
+    - theme: brand
+      text: "Get Started"
+      link: "/guide"
+    - theme: alt
+      text: "GitHub"
+      link: "https://github.com/ugokujs/ugoku"
+features:
+  - title: "Local-first"
+    details: "Runs entirely in the browser through a Web Worker, so it keeps working offline after the first load."
+  - title: "Real console output"
+    details: "Captures <code>console.*</code> output as it streams in, with top-level <code>await</code>, a timeout, and a Stop button for runaway code."
+  - title: "Editable, when you want"
+    details: "<code>run edit</code> blocks let readers tweak the code. Edits persist in <code>localStorage</code> and clear automatically once the author changes the snippet."
+  - title: "Drop-in adapters"
+    details: "One-line setup for VitePress or plain Astro, no extra build step."
+---
 
-ugoku turns a code fence into a runnable snippet. Add `run` for a Run button and console output, or `run edit` to also let readers modify the code.
+## Try it
+
+Four variations of the same idea: run-only, editable, TypeScript, and TypeScript combined with editing.
 
 ### Run-only
 
