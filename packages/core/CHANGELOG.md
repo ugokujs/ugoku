@@ -1,0 +1,7 @@
+# @ugoku/core
+
+## 0.1.1
+
+### Patch Changes
+
+- 1fd8164: Add a README to each published package.
