@@ -11,9 +11,13 @@
     "test:all": "pnpm typecheck && pnpm test && pnpm test:e2e && pnpm test:e2e:astro",
     "build:edit-chunk": "pnpm --filter @ugoku/core build:edit-chunk",
     "build:ts-chunk": "pnpm --filter @ugoku/core build:ts-chunk",
-    "verify:standalone-chunks": "pnpm build:edit-chunk && pnpm build:ts-chunk && node scripts/verify-standalone-chunks.mjs"
+    "verify:standalone-chunks": "pnpm build:edit-chunk && pnpm build:ts-chunk && node scripts/verify-standalone-chunks.mjs",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "^3.0.3",
     "@types/node": "^26.6.5",
     "@vitest/browser": "^5.0.5",
     "@vitest/browser-playwright": "^5.0.5",
