@@ -10,6 +10,10 @@ export default defineConfig({
   },
   themeConfig: {
     logo: { light: '/mark.svg', dark: '/mark-dark.svg' },
-    nav: [{ text: 'Roadmap', link: '/roadmap' }],
+    nav: [
+      { text: 'Home', link: '/' },
+      { text: 'Guide', link: '/guide' },
+      { text: 'Roadmap', link: '/roadmap' },
+    ],
   },
 });
