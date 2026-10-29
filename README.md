@@ -7,6 +7,10 @@ Lightweight, local-first runnable code snippets for sites that use [Shiki](https
 
 Add `run` to a fenced code block; readers get a Run button and streamed console output. Everything executes in the reader's browser — no server, works offline after first load.
 
+<p align="center">
+  <img src="./assets/demo.gif" alt="Demo: editing a run edit code block's loop bound from 5 to 10, then clicking Run to see the console output update to total: 55" width="600">
+</p>
+
 **Status: early, but published.** The core (JS + TypeScript execution, editable blocks, VitePress + plain Astro integrations) works and is dogfooded on this repo's own docs site. See the [roadmap](./docs/roadmap.md) for what's done and what's next.
 
 ## How it works
