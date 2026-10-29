@@ -1,1 +1,1 @@
-export { setupVitePressMount } from './setup-vitepress-mount.ts';
+export { ugokuTransformer } from '@ugoku/shiki';

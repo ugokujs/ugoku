@@ -2,55 +2,6 @@
 
 ## Installation
 
-### VitePress
-
-Install the packages:
-
-::: code-group
-
-```bash [npm]
-npm install @ugoku/shiki @ugoku/vitepress
-```
-
-```bash [pnpm]
-pnpm add @ugoku/shiki @ugoku/vitepress
-```
-
-```bash [yarn]
-yarn add @ugoku/shiki @ugoku/vitepress
-```
-
-:::
-
-Register the transformer in your VitePress config:
-
-```ts
-// .vitepress/config.ts
-import { defineConfig } from 'vitepress';
-import { ugokuTransformer } from '@ugoku/shiki';
-
-export default defineConfig({
-  markdown: {
-    codeTransformers: [ugokuTransformer()],
-  },
-});
-```
-
-Hook the mount into your theme, so ugoku re-scans on VitePress's SPA route changes, not just on first load:
-
-```ts
-// .vitepress/theme/index.ts
-import DefaultTheme from 'vitepress/theme';
-import { setupVitePressMount } from '@ugoku/vitepress';
-
-export default {
-  extends: DefaultTheme,
-  enhanceApp({ router }) {
-    setupVitePressMount(router);
-  },
-};
-```
-
 ### Astro
 
 Install the package:
@@ -81,6 +32,55 @@ import { ugoku } from '@ugoku/astro';
 export default defineConfig({
   integrations: [ugoku()],
 });
+```
+
+### VitePress
+
+Install the package:
+
+::: code-group
+
+```bash [npm]
+npm install @ugoku/vitepress
+```
+
+```bash [pnpm]
+pnpm add @ugoku/vitepress
+```
+
+```bash [yarn]
+yarn add @ugoku/vitepress
+```
+
+:::
+
+Register the transformer in your VitePress config:
+
+```ts
+// .vitepress/config.ts
+import { defineConfig } from 'vitepress';
+import { ugokuTransformer } from '@ugoku/vitepress';
+
+export default defineConfig({
+  markdown: {
+    codeTransformers: [ugokuTransformer()],
+  },
+});
+```
+
+Hook the mount into your theme, so ugoku re-scans on VitePress's SPA route changes, not just on first load:
+
+```ts
+// .vitepress/theme/index.ts
+import DefaultTheme from 'vitepress/theme';
+import { setupVitePressMount } from '@ugoku/vitepress/client';
+
+export default {
+  extends: DefaultTheme,
+  enhanceApp({ router }) {
+    setupVitePressMount(router);
+  },
+};
 ```
 
 ## Writing runnable snippets

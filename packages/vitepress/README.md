@@ -4,12 +4,12 @@ VitePress adapter for [ugoku](https://github.com/ugokujs/ugoku): runnable, edita
 
 ## Setup
 
-Register the [`@ugoku/shiki`](https://www.npmjs.com/package/@ugoku/shiki) transformer in your VitePress config:
+Register the transformer in your VitePress config:
 
 ```ts
 // .vitepress/config.ts
 import { defineConfig } from 'vitepress';
-import { ugokuTransformer } from '@ugoku/shiki';
+import { ugokuTransformer } from '@ugoku/vitepress';
 
 export default defineConfig({
   markdown: {
@@ -23,7 +23,7 @@ Then hook the mount into your theme, so ugoku re-scans on VitePress's SPA route 
 ```ts
 // .vitepress/theme/index.ts
 import DefaultTheme from 'vitepress/theme';
-import { setupVitePressMount } from '@ugoku/vitepress';
+import { setupVitePressMount } from '@ugoku/vitepress/client';
 
 export default {
   extends: DefaultTheme,

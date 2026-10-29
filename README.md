@@ -22,7 +22,7 @@ Add `run` to a fenced code block; readers get a Run button and streamed console 
 ```ts
 // .vitepress/config.ts
 import { defineConfig } from 'vitepress';
-import { ugokuTransformer } from '@ugoku/shiki';
+import { ugokuTransformer } from '@ugoku/vitepress';
 
 export default defineConfig({
   markdown: {
@@ -34,7 +34,7 @@ export default defineConfig({
 ```ts
 // .vitepress/theme/index.ts
 import DefaultTheme from 'vitepress/theme';
-import { setupVitePressMount } from '@ugoku/vitepress';
+import { setupVitePressMount } from '@ugoku/vitepress/client';
 
 export default {
   extends: DefaultTheme,

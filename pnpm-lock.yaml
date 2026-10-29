@@ -107,6 +107,9 @@ importers:
       '@ugoku/core':
         specifier: workspace:*
         version: link:../core
+      '@ugoku/shiki':
+        specifier: workspace:*
+        version: link:../shiki
 
 packages:
 
