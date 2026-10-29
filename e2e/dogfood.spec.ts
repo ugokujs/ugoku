@@ -14,11 +14,11 @@ test('home page mounts run and run-edit blocks and Run produces output', async (
 
 test('SPA navigation unmounts the old page and mounts the new one', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('link', { name: 'Go to page 2' }).click();
+  await page.getByRole('link', { name: 'More examples' }).click();
   await page.waitForURL('**/page2*');
 
-  await expect(page.locator('.ugoku-controls')).toHaveCount(1);
-  await expect(page.locator('pre[data-ugoku-mode]')).toHaveAttribute('data-ugoku-mounted', 'true');
+  await expect(page.locator('.ugoku-controls')).toHaveCount(3);
+  await expect(page.locator('pre[data-ugoku-mode]').first()).toHaveAttribute('data-ugoku-mounted', 'true');
 
   await page.locator('.ugoku-run-btn').first().click();
   await expect(page.locator('.ugoku-output-panel').first()).toContainText('hello from page 2');

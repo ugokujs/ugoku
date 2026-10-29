@@ -80,6 +80,41 @@ console.log(add(2, 3));
 
 TypeScript blocks (`ts`) have their type annotations stripped in the browser via [Sucrase](https://github.com/alangpierce/sucrase) before execution — this isn't type-checking, just enough to make the code valid JavaScript.
 
+## Styling
+
+ugoku ships markup with stable class names and CSS variables, but leaves the actual look to you — there's no default visual design to fight.
+
+### Buttons
+
+The run controls have no default styles at all. Target these classes directly in your own CSS:
+
+| Class | Element |
+| --- | --- |
+| `.ugoku-controls` | Wrapper around the buttons |
+| `.ugoku-run-btn` | Run button |
+| `.ugoku-stop-btn` | Stop button (shown while code is running) |
+| `.ugoku-reset-btn` | Reset button (`run edit` blocks only) |
+
+### Output panel
+
+The console output panel comes with sensible default colors, each overridable via a CSS variable so you don't need to override the class itself:
+
+| Class | CSS variable | Default |
+| --- | --- | --- |
+| `.ugoku-line-run-error`, `.ugoku-run-error-banner` | `--ugoku-color-error` | `#e5534b` |
+| `.ugoku-string` | `--ugoku-color-string` | `#22863a` |
+| `.ugoku-number` | `--ugoku-color-number` | `#005cc5` |
+| `.ugoku-boolean`, `.ugoku-null` | `--ugoku-color-boolean` | `#d73a49` |
+| `.ugoku-key` | `--ugoku-color-key` | `inherit` |
+| `.ugoku-class-name` | `--ugoku-color-class` | `#6f42c1` |
+| `.ugoku-special`, `.ugoku-punctuation`, `.ugoku-toggle`, `.ugoku-error-stack` | `--ugoku-color-special` / `--ugoku-color-punctuation` | `#6a737d` |
+
+Each console line also gets `.ugoku-line-log`, `.ugoku-line-warn`, `.ugoku-line-error`, `.ugoku-line-info`, or `.ugoku-line-debug` depending on which `console.*` method produced it, alongside the shared `.ugoku-line` class.
+
+### Edit overlay
+
+`run edit` blocks render a transparent textarea over the highlighted code. Its font and padding read from your host's own CSS variables where available (e.g. VitePress's `--vp-code-*`), falling back to `--ugoku-font-edit-*` and `--ugoku-padding-edit-*` variables you can set yourself.
+
 ## What's next
 
 - See the [Roadmap](./roadmap) for what's shipped and what's coming.

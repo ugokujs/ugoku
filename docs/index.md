@@ -71,4 +71,4 @@ function distance(p: Point): number {
 console.log('distance:', distance({ x: 3, y: 4 }));
 ```
 
-[Go to page 2](./page2)
+[More examples](./page2)
