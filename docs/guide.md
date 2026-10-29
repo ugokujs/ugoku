@@ -139,6 +139,16 @@ Each console line also gets `.ugoku-line-log`, `.ugoku-line-warn`, `.ugoku-line-
 
 `run edit` blocks render a transparent textarea over the highlighted code. Its font and padding read from your host's own CSS variables where available (e.g. VitePress's `--vp-code-*`), falling back to `--ugoku-font-edit-*` and `--ugoku-padding-edit-*` variables you can set yourself.
 
+## Security
+
+Code runs in a module Web Worker, which has no DOM access — but it's not a sandbox against your own origin. `fetch`/`XMLHttpRequest` calls made from inside it carry the same cookies as the page, so a block can call same-origin authenticated APIs. This applies equally to `run` and `run edit` blocks: editability doesn't grant new capabilities, it only changes who chooses the code that runs — the doc author for `run`, the reader for `run edit`. Since the reader is running their own code in their own session, this is closer to self-XSS than an attack on your site.
+
+`run edit` persistence is scoped to `localStorage`, keyed by the block's source hash, and only ever written from the reader's own edits — there's no URL parameter or query string that seeds editor content. If you build anything on top of ugoku that shares or links to an edited snippet (e.g. a "share this" URL), threat-model it first — that's exactly the kind of feature that would let a third party's code land in someone else's session.
+
+The console output panel renders every value via `textContent`, never `innerHTML`, so crafted output like `console.log('<img onerror=...>')` can't execute in the page.
+
+If your site has a Content-Security-Policy, module workers created from a `Blob:` URL need `worker-src blob:` (or `child-src blob:` as a fallback). Without it, ugoku fails closed — the Run button just won't work — rather than failing open.
+
 ## What's next
 
 - See the [Roadmap](./roadmap) for what's shipped and what's coming.
