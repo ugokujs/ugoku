@@ -127,7 +127,6 @@ test('a re-highlighted run-edit block keeps dark-theme colors after an edit, ins
   await overlay.click();
   await overlay.fill('console.log("dark theme check");');
   await page.locator('h1').click(); // blur -> flushes the debounced rehighlight
-  await page.waitForTimeout(500);
 
   // VitePress's dark-mode span-color rule (`.dark .vp-code span { color:
   // var(--shiki-dark) }`) only applies if the re-highlighted <pre> keeps the
@@ -137,16 +136,27 @@ test('a re-highlighted run-edit block keeps dark-theme colors after an edit, ins
   // The outermost span per line is shiki's unstyled `.line` wrapper — the
   // colored token spans are nested one level deeper.
   const span = pre.locator('code .line span').first();
-  const { computedColor, shikiDarkVar } = await span.evaluate((el) => {
-    const shikiDark = el.getAttribute('style')?.match(/--shiki-dark:\s*([^;]+)/)?.[1]?.trim();
+
+  // The re-highlight swaps in a fresh <pre>, so the span this locator
+  // resolves to can still be mid-replacement right after the blur fires.
+  // Compute the expected color once, then poll the live span — this
+  // re-resolves the locator each attempt, riding out that window instead
+  // of racing it with a fixed wait.
+  const shikiDark = await span.evaluate(
+    (el) => el.getAttribute('style')?.match(/--shiki-dark:\s*([^;]+)/)?.[1]?.trim(),
+  );
+  const shikiDarkVar = await page.evaluate((color) => {
     const probe = document.createElement('span');
-    if (shikiDark) probe.style.color = shikiDark;
+    if (color) probe.style.color = color;
     document.body.appendChild(probe);
     const resolved = getComputedStyle(probe).color;
     probe.remove();
-    return { computedColor: getComputedStyle(el).color, shikiDarkVar: resolved };
-  });
-  expect(computedColor).toBe(shikiDarkVar);
+    return resolved;
+  }, shikiDark);
+
+  await expect
+    .poll(() => span.evaluate((el) => getComputedStyle(el).color))
+    .toBe(shikiDarkVar);
 });
 
 test('Run on a ts-lang "run" block strips types and executes successfully', async ({ page }) => {
