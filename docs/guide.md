@@ -6,9 +6,21 @@
 
 Install the packages:
 
-```bash
+::: code-group
+
+```bash [npm]
+npm install @ugoku/shiki @ugoku/vitepress
+```
+
+```bash [pnpm]
 pnpm add @ugoku/shiki @ugoku/vitepress
 ```
+
+```bash [yarn]
+yarn add @ugoku/shiki @ugoku/vitepress
+```
+
+:::
 
 Register the transformer in your VitePress config:
 
@@ -43,9 +55,21 @@ export default {
 
 Install the package:
 
-```bash
+::: code-group
+
+```bash [npm]
+npm install @ugoku/astro
+```
+
+```bash [pnpm]
 pnpm add @ugoku/astro
 ```
+
+```bash [yarn]
+yarn add @ugoku/astro
+```
+
+:::
 
 Add the integration — it wires up both the Shiki transformer and the page script in one step:
 
