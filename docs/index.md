@@ -23,7 +23,7 @@ features:
 
 ## Try it
 
-Four variations of the same idea: run-only, editable, TypeScript, and TypeScript combined with editing.
+A few variations of the same idea: run-only, editable, TypeScript, TypeScript combined with editing, and fetching data.
 
 ### Run-only
 
@@ -69,6 +69,16 @@ function distance(p: Point): number {
   return Math.sqrt(p.x * p.x + p.y * p.y);
 }
 console.log('distance:', distance({ x: 3, y: 4 }));
+```
+
+### Fetching data
+
+Regular `fetch()` works inside the worker — this one hits a static JSON file served by this site. Relative paths don't resolve inside the worker's `blob:` URL, so build an absolute URL from `self.origin` first.
+
+```js run
+const res = await fetch(new URL('/example-data.json', self.origin));
+const data = await res.json();
+console.log(data);
 ```
 
 [More examples](./page2)

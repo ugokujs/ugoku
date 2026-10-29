@@ -104,6 +104,18 @@ console.log(add(2, 3));
 
 TypeScript blocks (`ts`) have their type annotations stripped in the browser via [Sucrase](https://github.com/alangpierce/sucrase) before execution — this isn't type-checking, just enough to make the code valid JavaScript.
 
+### Fetching data
+
+`fetch()` works inside the worker like anywhere else in the browser, which makes it a natural fit for examples that call an API. One gotcha: the worker runs from a `blob:` URL, and a relative path like `fetch('/data.json')` fails to parse against that — build an absolute URL from `self.origin` instead:
+
+```js run
+const res = await fetch(new URL('/example-data.json', self.origin));
+const data = await res.json();
+console.log(data);
+```
+
+This is a same-origin request, so it carries the reader's cookies the same as any other `fetch` call on your site — see [Security](#security) for what that means for `run edit` blocks.
+
 ## Styling
 
 ugoku ships markup with stable class names and CSS variables, but leaves the actual look to you — there's no default visual design to fight.
