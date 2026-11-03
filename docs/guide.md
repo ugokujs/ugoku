@@ -151,6 +151,19 @@ Each console line also gets `.ugoku-line-log`, `.ugoku-line-warn`, `.ugoku-line-
 
 `run edit` blocks render a transparent textarea over the highlighted code. Its font and padding read from your host's own CSS variables where available (e.g. VitePress's `--vp-code-*`), falling back to `--ugoku-font-edit-*` and `--ugoku-padding-edit-*` variables you can set yourself.
 
+### Custom grammars and themes
+
+If your site's own Shiki config uses a grammar or theme that isn't in [Shiki's bundle](https://shiki.style/languages), the initial page render works automatically — but the lazy re-highlighter `run edit` uses needs to be told about it separately, since it builds its own independent highlighter instance in the reader's browser. Register the same loader you already pass to your Shiki/VitePress config:
+
+```ts
+import { registerLanguageLoader, registerThemeLoader } from '@ugoku/core';
+
+registerLanguageLoader('my-lang', () => import('./my-lang.tmLanguage.json'));
+registerThemeLoader('my-theme', () => import('./my-theme.json'));
+```
+
+Call these once, at site init — alongside `setupVitePressMount`/your Astro integration setup, not inside a component that re-runs on every navigation. Without registration, an unbundled grammar/theme still works for editing and running — the block just falls back to plain-text (no live re-highlighting) with a one-time warning in its output panel.
+
 ## Security
 
 Code runs in a module Web Worker, which has no DOM access — but it's not a sandbox against your own origin. `fetch`/`XMLHttpRequest` calls made from inside it carry the same cookies as the page, so a block can call same-origin authenticated APIs. This applies equally to `run` and `run edit` blocks: editability doesn't grant new capabilities, it only changes who chooses the code that runs — the doc author for `run`, the reader for `run edit`. Since the reader is running their own code in their own session, this is closer to self-XSS than an attack on your site.
