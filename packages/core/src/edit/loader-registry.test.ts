@@ -15,7 +15,7 @@ test('getThemeLoader returns undefined for an unregistered name', () => {
 });
 
 test('registerLanguageLoader makes a loader retrievable by name', () => {
-  const loader = () => ({ name: 'my-lang', scopeName: 'source.my-lang', patterns: [] });
+  const loader = () => ({ name: 'my-lang', scopeName: 'source.my-lang', patterns: [], repository: {} });
   registerLanguageLoader('my-lang', loader);
   expect(getLanguageLoader('my-lang')).toBe(loader);
 });
@@ -27,8 +27,8 @@ test('registerThemeLoader makes a loader retrievable by name', () => {
 });
 
 test('registering a name twice overwrites the previous loader (last write wins)', () => {
-  const first = () => ({ name: 'dup-lang', scopeName: 'source.dup-lang', patterns: [] });
-  const second = () => ({ name: 'dup-lang', scopeName: 'source.dup-lang-v2', patterns: [] });
+  const first = () => ({ name: 'dup-lang', scopeName: 'source.dup-lang', patterns: [], repository: {} });
+  const second = () => ({ name: 'dup-lang', scopeName: 'source.dup-lang-v2', patterns: [], repository: {} });
   registerLanguageLoader('dup-lang', first);
   registerLanguageLoader('dup-lang', second);
   expect(getLanguageLoader('dup-lang')).toBe(second);

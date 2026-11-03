@@ -73,7 +73,7 @@ test('a bundled language name is never shadowed by a same-named custom registrat
   // were broken).
   registerLanguageLoader('python', (() => {
     throw new Error('this loader must never be called — python is bundled');
-  }) as any);
+  }));
 
   await expect(ensureLoaded('python', ['github-light'])).resolves.toBeDefined();
 });
