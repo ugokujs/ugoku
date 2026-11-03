@@ -17,3 +17,5 @@ export type {
 export { OutputPanel, renderValue } from './output-panel/index.ts';
 
 export { mount, unmount } from './mount/index.ts';
+
+export { registerLanguageLoader, registerThemeLoader } from './edit/loader-registry.ts';
