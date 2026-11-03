@@ -1,6 +1,6 @@
 {
   "name": "@ugoku/astro",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Astro integration for ugoku: runnable, editable code snippets in your Astro site, auto-wired in one line.",
   "keywords": [
     "astro",
