@@ -1,6 +1,19 @@
 {
   "name": "@ugoku/core",
   "version": "0.1.1",
+  "description": "Local-first runtime for runnable code snippets in Shiki-highlighted sites: Web Worker execution, streamed console output, and an editable overlay.",
+  "keywords": [
+    "shiki",
+    "runnable-code",
+    "code-playground",
+    "interactive-code",
+    "live-code-editor",
+    "console",
+    "web-worker",
+    "javascript",
+    "typescript",
+    "local-first"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",

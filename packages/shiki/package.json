@@ -1,6 +1,14 @@
 {
   "name": "@ugoku/shiki",
   "version": "0.1.1",
+  "description": "Build-time Shiki transformer that marks runnable/editable code fences for ugoku.",
+  "keywords": [
+    "shiki",
+    "shiki-transformer",
+    "runnable-code",
+    "markdown",
+    "code-blocks"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",

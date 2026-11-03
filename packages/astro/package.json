@@ -1,6 +1,14 @@
 {
   "name": "@ugoku/astro",
   "version": "0.1.1",
+  "description": "Astro integration for ugoku: runnable, editable code snippets in your Astro site, auto-wired in one line.",
+  "keywords": [
+    "astro",
+    "astro-integration",
+    "shiki",
+    "runnable-code",
+    "documentation"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
