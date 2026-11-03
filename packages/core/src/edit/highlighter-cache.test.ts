@@ -36,7 +36,8 @@ test('ensureLoaded resolves a custom-registered language not in Shiki\'s bundle'
     name: 'my-custom-lang',
     scopeName: 'source.my-custom-lang',
     patterns: [],
-  } as any));
+    repository: {},
+  }));
 
   const highlighter = await ensureLoaded('my-custom-lang', ['github-light']);
   const html = highlighter.codeToHtml('hello world', { lang: 'my-custom-lang', theme: 'github-light' });
@@ -76,4 +77,17 @@ test('a bundled language name is never shadowed by a same-named custom registrat
   }));
 
   await expect(ensureLoaded('python', ['github-light'])).resolves.toBeDefined();
+});
+
+test('a bundled theme name is never shadowed by a same-named custom registration', async () => {
+  // "github-dark" is a real Shiki-bundled theme already loaded by an earlier
+  // test in this file — same reasoning as the language test above: a loaded
+  // theme skips straight past the bundled-vs-custom check, so this wouldn't
+  // actually exercise precedence. Use "monokai", a bundled theme no earlier
+  // test in this file loads.
+  registerThemeLoader('monokai', () => {
+    throw new Error('this loader must never be called — monokai is bundled');
+  });
+
+  await expect(ensureLoaded('javascript', ['monokai'])).resolves.toBeDefined();
 });

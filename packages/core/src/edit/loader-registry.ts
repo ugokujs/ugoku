@@ -1,5 +1,11 @@
 import type { LanguageRegistration, ThemeRegistration } from 'shiki';
 
+// Must stay a single module instance shared between @ugoku/core's eager entry
+// (where registerLanguageLoader/registerThemeLoader are called, before the
+// edit chunk ever loads) and the lazily-imported edit chunk (where
+// highlighter-cache.ts reads them back via getLanguageLoader/getThemeLoader).
+// A bundler change that ever duplicates this module into two separate chunks
+// would make registrations silently invisible to ensureLoaded.
 type MaybePromise<T> = T | Promise<T>;
 export type LanguageLoader = () => MaybePromise<LanguageRegistration>;
 export type ThemeLoader = () => MaybePromise<ThemeRegistration>;
