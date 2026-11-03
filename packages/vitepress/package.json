@@ -1,6 +1,6 @@
 {
   "name": "@ugoku/vitepress",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "VitePress adapter for ugoku: runnable, editable code snippets in your VitePress docs, no server involved.",
   "keywords": [
     "vitepress",

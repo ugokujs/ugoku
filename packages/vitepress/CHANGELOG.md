@@ -1,5 +1,12 @@
 # @ugoku/vitepress
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [680402f]
+  - @ugoku/core@0.2.0
+
 ## 0.2.0
 
 ### Minor Changes

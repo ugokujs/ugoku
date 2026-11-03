@@ -1,6 +1,6 @@
 {
   "name": "@ugoku/core",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Local-first runtime for runnable code snippets in Shiki-highlighted sites: Web Worker execution, streamed console output, and an editable overlay.",
   "keywords": [
     "shiki",
