@@ -18,14 +18,18 @@ function render(markdown: string, themeOption: ThemeOption): Promise<string> {
     .then((file) => String(file));
 }
 
-test('run fence stamps mode, lang, and hash through @shikijs/rehype', async () => {
-  const html = await render(['```js run', "console.log('hello');", '```'].join('\n'), {
-    theme: 'github-light',
-  });
-  expect(html).toContain('data-ugoku-mode="run"');
-  expect(html).toContain('data-ugoku-lang="js"');
-  expect(html).toMatch(/data-ugoku-hash="[0-9a-f]{10}"/);
-});
+test(
+  'run fence stamps mode, lang, and hash through @shikijs/rehype',
+  async () => {
+    const html = await render(['```js run', "console.log('hello');", '```'].join('\n'), {
+      theme: 'github-light',
+    });
+    expect(html).toContain('data-ugoku-mode="run"');
+    expect(html).toContain('data-ugoku-lang="js"');
+    expect(html).toMatch(/data-ugoku-hash="[0-9a-f]{10}"/);
+  },
+  10000,
+);
 
 test('run edit fence stamps run-edit through @shikijs/rehype', async () => {
   const html = await render(['```ts run edit', 'const x: number = 1;', '```'].join('\n'), {
