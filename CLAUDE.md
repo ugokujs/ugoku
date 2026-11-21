@@ -65,7 +65,7 @@ Open source.
 
 - npm org `@ugoku` — claimed.
 - GitHub org `ugokujs`, repo `ugokujs/ugoku` — created.
-- Remaining: README, LICENSE, CI, flip packages from `private: true` / `0.0.0` to real publish config.
+- README, LICENSE, CI, and real publish config (versioned, non-private packages) — done. All four packages live on npm.
 
 ## Contributing
 
