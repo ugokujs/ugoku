@@ -7,11 +7,13 @@
 - **v0.3 (TypeScript)** — type annotations stripped in-browser via [Sucrase](https://github.com/alangpierce/sucrase) before execution. No type-checking — this only removes syntax that isn't valid JS.
 - **v0.3 (loader hook)** — `registerLanguageLoader`/`registerThemeLoader` let a site register a custom Shiki grammar or theme loader so the `run edit` re-highlighter can resolve it, matching what the site's own Shiki config already uses.
 - **v0.4 (plain Astro)** — a single `@ugoku/astro` integration: add it to `integrations` in `astro.config.mjs` and both the Shiki transformer and the client mount/navigation script are wired automatically. Works under Astro's default full-page navigation and under its opt-in `<ClientRouter />` view transitions.
+- **Unified/rehype passthrough** — `ugokuTransformer()` works unmodified through [`@shikijs/rehype`](https://shiki.style/packages/rehype) in any unified.js pipeline (Next.js MDX, Nextra, Docusaurus), verified by a regression test. No new package needed for the build-time half; readers wire their own client-side `mount()` call, same as the "Other unified.js sites" guide section covers.
 
 ## In progress / next up
 
 ## Later
 
+- **Eleventy / `markdown-it` support** — Eleventy's default markdown engine is `markdown-it`, not rehype, so the unified/rehype passthrough above doesn't reach it. Would need its own integration against something like [`@shikijs/markdown-it`](https://shiki.style/packages/markdown-it).
 - **Astro Starlight support** (`@ugoku/expressive-code`) — Starlight replaces Shiki with its own highlighter (Expressive Code), so this needs real adapter work rather than just wiring config, unlike the plain Astro adapter above.
 - **Language plugins** (e.g. Pyodide) as lazy-loaded opt-ins — never bundled into core. Plugin shape: `run(code) → stream of output events`.
 

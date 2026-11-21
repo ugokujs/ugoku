@@ -83,6 +83,34 @@ export default {
 };
 ```
 
+### Other unified.js sites (Next.js MDX, Nextra, Docusaurus)
+
+There's no dedicated `@ugoku/*` package for these yet, but you likely don't need one. If your site highlights code with [`@shikijs/rehype`](https://shiki.style/packages/rehype) — the common path for Next.js MDX, Nextra, and Docusaurus — it already accepts a `transformers` array passed straight through to Shiki, and `@ugoku/shiki`'s transformer is a plain `ShikiTransformer`. Add it to your existing list:
+
+```ts
+import rehypeShiki from '@shikijs/rehype';
+import { ugokuTransformer } from '@ugoku/shiki';
+
+// wherever you currently configure rehypeShiki
+.use(rehypeShiki, {
+  themes: { light: 'github-light', dark: 'github-dark' },
+  transformers: [
+    // ...your existing transformers
+    ugokuTransformer(),
+  ],
+})
+```
+
+This only covers the build-time half — turning `run`/`run edit` fences into marked-up `<pre>` elements. Unlike `@ugoku/vitepress` and `@ugoku/astro`, nothing here auto-wires the reader-facing half for you. Install `@ugoku/core` and call `mount()` yourself once the page's DOM is ready, and `unmount()`/`mount()` again on client-side route changes if your framework does them (e.g. Next.js App Router navigations):
+
+```ts
+import { mount } from '@ugoku/core';
+
+mount(document.body);
+```
+
+This doesn't cover Eleventy — its default markdown engine is `markdown-it`, not rehype, so a `ShikiTransformer` passed to `@shikijs/rehype` doesn't apply there.
+
 ## Writing runnable snippets
 
 Add `run` to a fence's info string for a run-only block, or `run edit` to also let readers modify the code before running it:
