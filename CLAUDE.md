@@ -56,9 +56,10 @@ Open source.
 
 - **v0 (done):** transformer with `run`; worker runner with timeout + Stop; streamed console panel with a good serializer; JS only; VitePress adapter; Playwright tests against the docs site.
 - **v0.2 (done):** `run edit` — overlay editor, lazy re-highlight, localStorage persistence + Reset.
-- **v0.3:** TypeScript via lazy-loaded type stripping (Sucrase, `ts` blocks only; no type-checking) — **done**. Custom grammar/theme loader hook (`registerLoader`) — pending.
+- **v0.3 (done):** TypeScript via lazy-loaded type stripping (Sucrase, `ts` blocks only; no type-checking). Custom grammar/theme loader hook (`registerLanguageLoader`/`registerThemeLoader`).
 - **v0.4 (done):** plain Astro adapter (`@ugoku/astro`) — single auto-wiring integration (unlike `@ugoku/vitepress`'s two manual steps), handling both Astro navigation models (plain MPA and `<ClientRouter />` transitions) from one `client.ts`.
-- **Later:** Expressive Code adapter (Astro Starlight support — separate/harder than plain Astro, since Starlight doesn't use Shiki transformers); language plugins (e.g. Pyodide) as lazy-loaded opt-ins, never in core. Plugin shape: `run(code) → stream of output events`. A generic rehype/unified plugin (build-time half only, framework-agnostic) to reach Next.js MDX, Nextra, Eleventy, and other unified.js pipelines in one package instead of one-off adapters — each framework would still need its own thin client-side mount/navigation script, same as `@ugoku/astro`'s.
+- **Unified/rehype passthrough (done):** `ugokuTransformer()` works unmodified through `@shikijs/rehype` in any unified.js pipeline (Next.js MDX, Nextra, Docusaurus) — no new package needed for the build-time half; readers wire their own client-side `mount()` call. Verified by a regression test in `@ugoku/shiki`.
+- **Later:** Expressive Code adapter (Astro Starlight support — separate/harder than plain Astro, since Starlight doesn't use Shiki transformers); language plugins (e.g. Pyodide) as lazy-loaded opt-ins, never in core. Plugin shape: `run(code) → stream of output events`. Eleventy support — its default markdown engine is `markdown-it`, not rehype/unified, so the passthrough above doesn't reach it; would need its own integration against something like `@shikijs/markdown-it`.
 
 ## Housekeeping
 
