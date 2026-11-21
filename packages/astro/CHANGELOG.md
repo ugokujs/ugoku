@@ -1,5 +1,12 @@
 # @ugoku/astro
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [9992c0f]
+  - @ugoku/core@0.2.1
+
 ## 0.1.2
 
 ### Patch Changes

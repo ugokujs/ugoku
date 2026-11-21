@@ -1,5 +1,11 @@
 # @ugoku/core
 
+## 0.2.1
+
+### Patch Changes
+
+- 9992c0f: Bump the `shiki` dependency range to `^4.6.0` to match `@shikijs/types`, avoiding a duplicate `shiki` version in the lockfile. No behavior change.
+
 ## 0.2.0
 
 ### Minor Changes
